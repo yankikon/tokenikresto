@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-// Tokenik Restaurant Token App - Backend
+// Tokenik Restaurant Token App - Backend (Updated with Kitchen/Bar tabs)
 
 
 function QSRBackend() {
