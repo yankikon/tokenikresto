@@ -6,9 +6,8 @@ function QSRTVDisplay() {
   useEffect(() => {
     const loadOrders = () => {
       const savedOrders = JSON.parse(localStorage.getItem('qsrOrders') || '[]');
-      // Filter out completed orders for TV display
-      const activeOrders = savedOrders.filter(order => order.status !== 'completed');
-      setOrders(activeOrders);
+      // Include all orders including delivered for Kanban board
+      setOrders(savedOrders);
     };
 
     loadOrders();
@@ -22,6 +21,7 @@ function QSRTVDisplay() {
       case 'pending': return 'bg-yellow-500';
       case 'preparing': return 'bg-blue-500';
       case 'ready': return 'bg-green-500';
+      case 'delivered': return 'bg-purple-500';
       default: return 'bg-gray-500';
     }
   };
@@ -31,12 +31,17 @@ function QSRTVDisplay() {
       case 'pending': return '⏰';
       case 'preparing': return '👨‍🍳';
       case 'ready': return '✅';
+      case 'delivered': return '🎉';
       default: return null;
     }
   };
 
   const getStatusText = (status) => {
     return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
+  const getOrdersByStatus = (status) => {
+    return orders.filter(order => order.status === status);
   };
 
   return (
@@ -46,52 +51,169 @@ function QSRTVDisplay() {
         <p className="text-2xl text-gray-600">Please wait for your token to be called</p>
       </div>
 
-      {orders.length === 0 ? (
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <span className="text-6xl text-gray-400">⏰</span>
-            </div>
-            <p className="text-3xl text-gray-500 font-medium">No orders yet</p>
+      {/* Kanban Board */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Pending Column */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+            <h2 className="text-xl font-bold text-gray-900">Pending</h2>
+            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+              {getOrdersByStatus('pending').length}
+            </span>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {orders.map(order => (
-            <div
-              key={order.id}
-              className="bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all hover:scale-105"
-            >
-              <div className={`${getStatusColor(order.status)} p-6 text-white`}>
-                <div className="flex items-center justify-between">
-                  <div className="text-4xl font-bold tracking-wide">{order.token}</div>
-                  <div className="bg-white bg-opacity-30 p-3 rounded-full text-2xl">
-                    {getStatusIcon(order.status)}
-                  </div>
+          <div className="space-y-4">
+            {getOrdersByStatus('pending').map(order => (
+              <div key={order.id} className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-yellow-600 text-xl">⏰</div>
                 </div>
-              </div>
-
-              <div className="p-6">
-                <div className="space-y-3 mb-6">
-                  {order.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center">
-                      <span className="text-gray-700 text-lg">
-                        {item.name} × {item.quantity}
-                      </span>
+                <div className="space-y-1">
+                  {order.items.slice(0, 2).map((item, idx) => (
+                    <div key={idx} className="text-sm text-gray-600">
+                      {item.name} × {item.quantity}
                     </div>
                   ))}
-                </div>
-
-                <div className={`${getStatusColor(order.status)} text-white px-6 py-4 rounded-2xl text-center`}>
-                  <div className="text-2xl font-bold uppercase tracking-wider">
-                    {getStatusText(order.status)}
-                  </div>
+                  {order.items.length > 2 && (
+                    <div className="text-xs text-gray-500">
+                      +{order.items.length - 2} more items
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+            {getOrdersByStatus('pending').length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                <div className="text-4xl mb-2">⏰</div>
+                <p className="text-sm">No pending orders</p>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Preparing Column */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+            <h2 className="text-xl font-bold text-gray-900">Preparing</h2>
+            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+              {getOrdersByStatus('preparing').length}
+            </span>
+          </div>
+          <div className="space-y-4">
+            {getOrdersByStatus('preparing').map(order => (
+              <div key={order.id} className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-blue-600 text-xl">👨‍🍳</div>
+                </div>
+                <div className="space-y-1">
+                  {order.items.slice(0, 2).map((item, idx) => (
+                    <div key={idx} className="text-sm text-gray-600">
+                      {item.name} × {item.quantity}
+                    </div>
+                  ))}
+                  {order.items.length > 2 && (
+                    <div className="text-xs text-gray-500">
+                      +{order.items.length - 2} more items
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {getOrdersByStatus('preparing').length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                <div className="text-4xl mb-2">👨‍🍳</div>
+                <p className="text-sm">No orders preparing</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Ready Column */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+            <h2 className="text-xl font-bold text-gray-900">Ready</h2>
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+              {getOrdersByStatus('ready').length}
+            </span>
+          </div>
+          <div className="space-y-4">
+            {getOrdersByStatus('ready').map(order => (
+              <div key={order.id} className="bg-green-50 border border-green-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-green-600 text-xl">✅</div>
+                </div>
+                <div className="space-y-1">
+                  {order.items.slice(0, 2).map((item, idx) => (
+                    <div key={idx} className="text-sm text-gray-600">
+                      {item.name} × {item.quantity}
+                    </div>
+                  ))}
+                  {order.items.length > 2 && (
+                    <div className="text-xs text-gray-500">
+                      +{order.items.length - 2} more items
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {getOrdersByStatus('ready').length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                <div className="text-4xl mb-2">✅</div>
+                <p className="text-sm">No orders ready</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Delivered Column */}
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+            <h2 className="text-xl font-bold text-gray-900">Delivered</h2>
+            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
+              {getOrdersByStatus('delivered').length}
+            </span>
+          </div>
+          <div className="space-y-4">
+            {getOrdersByStatus('delivered').map(order => (
+              <div key={order.id} className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-purple-600 text-xl">🎉</div>
+                </div>
+                <div className="space-y-1">
+                  {order.items.slice(0, 2).map((item, idx) => (
+                    <div key={idx} className="text-sm text-gray-600">
+                      {item.name} × {item.quantity}
+                    </div>
+                  ))}
+                  {order.items.length > 2 && (
+                    <div className="text-xs text-gray-500">
+                      +{order.items.length - 2} more items
+                    </div>
+                  )}
+                </div>
+                {order.deliveredAt && (
+                  <div className="text-xs text-purple-600 mt-2">
+                    Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
+                  </div>
+                )}
+              </div>
+            ))}
+            {getOrdersByStatus('delivered').length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                <div className="text-4xl mb-2">🎉</div>
+                <p className="text-sm">No delivered orders</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="fixed bottom-8 right-8 flex items-center gap-3 bg-white px-6 py-3 rounded-full shadow-lg">
         <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
