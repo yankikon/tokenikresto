@@ -1,5 +1,4 @@
 const { useState, useEffect } = React;
-const { Plus, X, Minus, Edit2, Trash2 } = lucide;
 
 
 function QSRBackend() {
@@ -212,14 +211,14 @@ function QSRBackend() {
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit Order"
                         >
-                          <Edit2 className="w-5 h-5" />
+                          ✏️
                         </button>
                         <button
                           onClick={() => deleteOrder(order.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Cancel Order"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          🗑️
                         </button>
                       </div>
                     </div>
@@ -303,7 +302,7 @@ function QSRBackend() {
                         onClick={() => updateCart(item.id, -1)}
                         className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
                       >
-                        <Minus className="w-4 h-4" />
+                        −
                       </button>
                       
                       <div className="text-xl font-bold text-gray-900 min-w-[40px] text-center">
@@ -314,7 +313,7 @@ function QSRBackend() {
                         onClick={() => updateCart(item.id, 1)}
                         className="w-10 h-10 flex items-center justify-center bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                       >
-                        <Plus className="w-4 h-4" />
+                        +
                       </button>
                     </div>
                   </div>
@@ -399,8 +398,7 @@ function QSRBackend() {
                   onClick={addMenuItem}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
                 >
-                  <Plus className="w-5 h-5" />
-                  Add Menu Item
+                  + Add Menu Item
                 </button>
               </div>
 
@@ -415,7 +413,7 @@ function QSRBackend() {
                       onClick={() => deleteMenuItem(item.id)}
                       className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
                     >
-                      <X className="w-5 h-5" />
+                      ✕
                     </button>
                   </div>
                 ))}
