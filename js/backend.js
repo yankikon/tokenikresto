@@ -13,7 +13,7 @@ function QSRBackend() {
     { id: 4, name: 'Vada', price: 50, category: 'Kitchen' }
   ]);
   const [orders, setOrders] = useState([]);
-  const [newItem, setNewItem] = useState({ name: '', price: '', category: 'Kitchen' });
+  const [newItem, setNewItem] = useState({ name: '', price: '', category: '' });
   const [cart, setCart] = useState({});
   const [editingOrder, setEditingOrder] = useState(null);
 
