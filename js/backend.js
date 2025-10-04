@@ -8,6 +8,7 @@ const SOUTH_INDIAN_CITIES = [
 
 function QSRBackend() {
   const [activeTab, setActiveTab] = useState('orders');
+  const [error, setError] = useState(null);
   const [menuItems, setMenuItems] = useState([
     { id: 1, name: 'Masala Dosa', price: 80 },
     { id: 2, name: 'Idli Sambhar', price: 60 },
@@ -38,12 +39,15 @@ function QSRBackend() {
 
   const addMenuItem = () => {
     if (newItem.name && newItem.price) {
-      setMenuItems([...menuItems, {
-        id: Date.now(),
-        name: newItem.name,
-        price: parseFloat(newItem.price)
-      }]);
-      setNewItem({ name: '', price: '' });
+      const price = parseFloat(newItem.price);
+      if (!isNaN(price) && price > 0) {
+        setMenuItems([...menuItems, {
+          id: Date.now(),
+          name: newItem.name.trim(),
+          price: price
+        }]);
+        setNewItem({ name: '', price: '' });
+      }
     }
   };
 
@@ -71,8 +75,13 @@ function QSRBackend() {
     
     const orderItems = Object.entries(cart).map(([itemId, qty]) => {
       const item = menuItems.find(m => m.id === parseInt(itemId));
-      return { ...item, quantity: qty };
-    });
+      if (item) {
+        return { ...item, quantity: qty };
+      }
+      return null;
+    }).filter(Boolean);
+
+    if (orderItems.length === 0) return;
 
     const newOrder = {
       id: Date.now(),
@@ -114,8 +123,13 @@ function QSRBackend() {
     
     const orderItems = Object.entries(cart).map(([itemId, qty]) => {
       const item = menuItems.find(m => m.id === parseInt(itemId));
-      return { ...item, quantity: qty };
-    });
+      if (item) {
+        return { ...item, quantity: qty };
+      }
+      return null;
+    }).filter(Boolean);
+
+    if (orderItems.length === 0) return;
 
     setOrders(orders.map(order => 
       order.id === editingOrder 
@@ -144,6 +158,23 @@ function QSRBackend() {
       return sum + (item ? item.price * qty : 0);
     }, 0);
   };
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-gray-700 mb-4">{error}</p>
+          <button 
+            onClick={() => setError(null)}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -400,6 +431,8 @@ function QSRBackend() {
                   placeholder="Price"
                   value={newItem.price}
                   onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                  step="0.01"
+                  min="0"
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
                 />
                 <button
@@ -434,4 +467,46 @@ function QSRBackend() {
   );
 }
 
-ReactDOM.render(<QSRBackend />, document.getElementById('root'));
+// Error boundary wrapper
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error: error.message };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-bold text-red-600 mb-4">Something went wrong</h2>
+            <p className="text-gray-700 mb-4">{this.state.error}</p>
+            <button 
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+ReactDOM.render(
+  <ErrorBoundary>
+    <QSRBackend />
+  </ErrorBoundary>, 
+  document.getElementById('root')
+);
