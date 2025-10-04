@@ -1,5 +1,4 @@
 const { useState, useEffect } = React;
-const { Clock, CheckCircle, AlertCircle } = lucide;
 
 function QSRTVDisplay() {
   const [orders, setOrders] = useState([]);
@@ -27,9 +26,9 @@ function QSRTVDisplay() {
 
   const getStatusIcon = (status) => {
     switch(status) {
-      case 'pending': return <Clock className="w-8 h-8" />;
-      case 'preparing': return <AlertCircle className="w-8 h-8" />;
-      case 'ready': return <CheckCircle className="w-8 h-8" />;
+      case 'pending': return '⏰';
+      case 'preparing': return '👨‍🍳';
+      case 'ready': return '✅';
       default: return null;
     }
   };
@@ -49,7 +48,7 @@ function QSRTVDisplay() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Clock className="w-16 h-16 text-gray-400" />
+              <span className="text-6xl text-gray-400">⏰</span>
             </div>
             <p className="text-3xl text-gray-500 font-medium">No orders yet</p>
           </div>
@@ -64,7 +63,7 @@ function QSRTVDisplay() {
               <div className={`${getStatusColor(order.status)} p-6 text-white`}>
                 <div className="flex items-center justify-between">
                   <div className="text-4xl font-bold tracking-wide">{order.token}</div>
-                  <div className="bg-white bg-opacity-30 p-3 rounded-full">
+                  <div className="bg-white bg-opacity-30 p-3 rounded-full text-2xl">
                     {getStatusIcon(order.status)}
                   </div>
                 </div>
