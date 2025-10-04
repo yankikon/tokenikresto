@@ -32,14 +32,14 @@ function QSRBackend() {
   };
 
   const addMenuItem = () => {
-    if (newItem.name && newItem.price && newItem.category) {
+    if (newItem.name && newItem.price ) {
       setMenuItems([...menuItems, {
         id: Date.now(),
         name: newItem.name,
         price: parseFloat(newItem.price),
-        category: newItem.category
+        category: menuTab
       }]);
-      setNewItem({ name: '', price: '', category: 'Kitchen' });
+      setNewItem({ name: '', price: '' });
     }
   };
 
