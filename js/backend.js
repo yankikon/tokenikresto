@@ -299,7 +299,7 @@ function QSRBackend() {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Orders</h2>
                 
-                <React.Fragment>
+                <div>
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
@@ -554,7 +554,7 @@ function QSRBackend() {
                     </div>
                   )}
                 </div>
-                </React.Fragment>
+                </div>
               </div>
             )}
           </div>
@@ -631,7 +631,7 @@ function QSRBackend() {
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Select Items</h2>
               
-              <React.Fragment>
+              <div>
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <span className="w-3 h-3 bg-green-500 rounded-full"></span>
@@ -709,7 +709,7 @@ function QSRBackend() {
                   ))}
                 </div>
               </div>
-              </React.Fragment>
+              </div>
             </div>
 
             {Object.keys(cart).length > 0 && (
