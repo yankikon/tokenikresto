@@ -270,7 +270,6 @@ function QSRBackend() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {activeTab === 'orders' && (
           <div className="space-y-6">
-            {/* Order Sub-tabs */}
             <div className="bg-white border-b border-gray-200 rounded-t-lg">
               <div className="flex">
                 <button
@@ -296,12 +295,10 @@ function QSRBackend() {
               </div>
             </div>
 
-            {/* Active Orders Tab */}
             {orderSubTab === 'active' && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Orders</h2>
                 
-                {/* Bar Orders */}
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
@@ -405,7 +402,6 @@ function QSRBackend() {
               </div>
             )}
 
-            {/* Completed Orders Tab */}
             {orderSubTab === 'completed' && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Completed Orders</h2>
@@ -456,7 +452,6 @@ function QSRBackend() {
                   )}
                 </div>
                 
-                {/* Kitchen Orders */}
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-3 h-3 bg-green-500 rounded-full"></span>
@@ -572,7 +567,6 @@ function QSRBackend() {
               </div>
             )}
 
-            {/* Active Orders Display */}
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></span>
@@ -635,7 +629,6 @@ function QSRBackend() {
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Select Items</h2>
               
-              {/* Kitchen Items */}
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <span className="w-3 h-3 bg-green-500 rounded-full"></span>
@@ -675,7 +668,6 @@ function QSRBackend() {
                 </div>
               </div>
               
-              {/* Bar Items */}
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
