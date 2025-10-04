@@ -216,7 +216,7 @@ function QSRBackend() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Manager Dashboard</h1>
-              <p className="text-sm text-gray-500">South Indian QSR System</p>
+              <p className="text-sm text-gray-500">SOUTH CENTRAL RESTO TOKEN APP</p>
             </div>
             <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">← Back to Home</a>
           </div>
@@ -437,13 +437,73 @@ function QSRBackend() {
         )}
 
         {activeTab === 'takeOrder' && (
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {editingOrder && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <p className="text-blue-900 font-medium">Editing Order</p>
                 <p className="text-blue-700 text-sm">Modify items and click "Update Order"</p>
               </div>
             )}
+
+            {/* Active Orders Display */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></span>
+                Active Orders ({orders.filter(order => order.status !== 'completed').length})
+              </h2>
+              
+              {orders.filter(order => order.status !== 'completed').length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl text-gray-400">📋</span>
+                  </div>
+                  <p className="text-gray-500 text-lg">No active orders</p>
+                  <p className="text-gray-400 text-sm">Orders will appear here once placed</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {orders.filter(order => order.status !== 'completed').map(order => (
+                    <div key={order.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <div className="text-lg font-bold text-gray-900">{order.token}</div>
+                          <div className="text-xs text-gray-500">{order.timestamp}</div>
+                        </div>
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
+                          order.status === 'ready' ? 'bg-green-100 text-green-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-1 mb-3">
+                        {order.items.slice(0, 2).map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm">
+                            <span className="text-gray-600 truncate">{item.name} × {item.quantity}</span>
+                            <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                          </div>
+                        ))}
+                        {order.items.length > 2 && (
+                          <div className="text-xs text-gray-500 text-center">
+                            +{order.items.length - 2} more items
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="border-t border-gray-100 pt-2">
+                        <div className="flex justify-between text-sm font-bold">
+                          <span>Total</span>
+                          <span className="text-orange-600">₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Select Items</h2>
