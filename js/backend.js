@@ -20,6 +20,7 @@ function QSRBackend() {
   const [cart, setCart] = useState({});
   const [cityIndex, setCityIndex] = useState(0);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [editingMenuItem, setEditingMenuItem] = useState(null);
 
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem('qsrOrders') || '[]');
@@ -53,6 +54,31 @@ function QSRBackend() {
 
   const deleteMenuItem = (id) => {
     setMenuItems(menuItems.filter(item => item.id !== id));
+  };
+
+  const startEditMenuItem = (item) => {
+    setEditingMenuItem(item.id);
+    setNewItem({ name: item.name, price: item.price.toString() });
+  };
+
+  const updateMenuItem = () => {
+    if (newItem.name && newItem.price && editingMenuItem) {
+      const price = parseFloat(newItem.price);
+      if (!isNaN(price) && price > 0) {
+        setMenuItems(menuItems.map(item => 
+          item.id === editingMenuItem 
+            ? { ...item, name: newItem.name.trim(), price: price }
+            : item
+        ));
+        setNewItem({ name: '', price: '' });
+        setEditingMenuItem(null);
+      }
+    }
+  };
+
+  const cancelEditMenuItem = () => {
+    setNewItem({ name: '', price: '' });
+    setEditingMenuItem(null);
   };
 
   const updateCart = (itemId, change) => {
@@ -419,6 +445,13 @@ function QSRBackend() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Menu Items</h2>
               
               <div className="space-y-3 mb-6">
+                {editingMenuItem && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <p className="text-blue-900 font-medium">Editing Menu Item</p>
+                    <p className="text-blue-700 text-sm">Modify details and click "Update Item"</p>
+                  </div>
+                )}
+                
                 <input
                   type="text"
                   placeholder="Item name"
@@ -435,12 +468,30 @@ function QSRBackend() {
                   min="0"
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
                 />
-                <button
-                  onClick={addMenuItem}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-                >
-                  + Add Menu Item
-                </button>
+                
+                {editingMenuItem ? (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={cancelEditMenuItem}
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={updateMenuItem}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      Update Item
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={addMenuItem}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+                  >
+                    + Add Menu Item
+                  </button>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -450,12 +501,22 @@ function QSRBackend() {
                       <div className="font-semibold text-gray-900">{item.name}</div>
                       <div className="text-orange-600 font-medium">₹{item.price}</div>
                     </div>
-                    <button
-                      onClick={() => deleteMenuItem(item.id)}
-                      className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                    >
-                      ✕
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEditMenuItem(item)}
+                        className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                        title="Edit Item"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => deleteMenuItem(item.id)}
+                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                        title="Delete Item"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
