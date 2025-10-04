@@ -1,0 +1,31 @@
+{
+  "name": "tokenik-restaurant-app",
+  "version": "1.0.0",
+  "description": "Tokenik Restaurant Token Management System",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 3000 -o",
+    "dev": "npx http-server . -p 3000 -o --cors",
+    "serve": "npx http-server . -p 8080 -o"
+  },
+  "keywords": [
+    "restaurant",
+    "token-system",
+    "order-management",
+    "react",
+    "tailwind"
+  ],
+  "author": "Tokenik Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yankikon/tokenikresto.git"
+  },
+  "homepage": "https://yankikon.github.io/tokenikresto/",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
