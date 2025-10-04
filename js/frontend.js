@@ -6,7 +6,9 @@ function QSRTVDisplay() {
   useEffect(() => {
     const loadOrders = () => {
       const savedOrders = JSON.parse(localStorage.getItem('qsrOrders') || '[]');
-      setOrders(savedOrders);
+      // Filter out completed orders for TV display
+      const activeOrders = savedOrders.filter(order => order.status !== 'completed');
+      setOrders(activeOrders);
     };
 
     loadOrders();

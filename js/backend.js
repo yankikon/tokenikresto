@@ -128,6 +128,12 @@ function QSRBackend() {
     ));
   };
 
+  const completeOrder = (orderId) => {
+    setOrders(orders.map(order => 
+      order.id === orderId ? { ...order, status: 'completed', completedAt: new Date().toISOString() } : order
+    ));
+  };
+
   const deleteOrder = (orderId) => {
     if (confirm('Are you sure you want to cancel this order?')) {
       setOrders(orders.filter(order => order.id !== orderId));
@@ -255,15 +261,16 @@ function QSRBackend() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {activeTab === 'orders' && (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Orders</h2>
-            {orders.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                <p className="text-gray-500 text-lg">No orders yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {orders.map(order => (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Orders</h2>
+              {orders.filter(order => order.status !== 'completed').length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                  <p className="text-gray-500 text-lg">No active orders</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {orders.filter(order => order.status !== 'completed').map(order => (
                   <div key={order.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
                     <div className="flex items-start justify-between mb-4">
                       <div>
@@ -332,9 +339,61 @@ function QSRBackend() {
                       >
                         Ready
                       </button>
+                      <button
+                        onClick={() => completeOrder(order.id)}
+                        className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-purple-500 text-white hover:bg-purple-600"
+                      >
+                        Complete
+                      </button>
                     </div>
                   </div>
-                ))}
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {orders.filter(order => order.status === 'completed').length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Completed Orders</h2>
+                <div className="space-y-3">
+                  {orders.filter(order => order.status === 'completed').map(order => (
+                    <div key={order.id} className="bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                          <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                          {order.completedAt && (
+                            <div className="text-xs text-gray-400">
+                              Completed: {new Date(order.completedAt).toLocaleTimeString()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                          Completed
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white rounded-lg p-4 mb-4">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm py-1">
+                            <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                            <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                          </div>
+                        ))}
+                        <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold">
+                          <span>Total</span>
+                          <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <p className="text-blue-900 font-medium text-center">
+                          Complete billing for this order from pikonik
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
