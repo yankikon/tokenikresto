@@ -1,13 +1,14 @@
 const { useState, useEffect } = React;
 
 const SOUTH_INDIAN_CITIES = [
-  'Chennai', 'Bangalore', 'Hyderabad', 'Kochi', 'Trivandrum',
-  'Coimbatore', 'Madurai', 'Mysore', 'Mangalore', 'Vizag',
-  'Wayanad', 'Ooty', 'Pondicherry', 'Kanyakumari', 'Tirupati'
+  'Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem',
+  'Bengaluru', 'Mysuru', 'Mangaluru', 'Hyderabad', 'Warangal',
+  'Vijayawada', 'Visakhapatnam', 'Thiruvananthapuram', 'Kochi', 'Kozhikode'
 ];
 
 function QSRBackend() {
   const [activeTab, setActiveTab] = useState('orders');
+  const [orderSubTab, setOrderSubTab] = useState('active');
   const [error, setError] = useState(null);
   const [menuItems, setMenuItems] = useState([
     { id: 1, name: 'Masala Dosa', price: 80 },
@@ -262,15 +263,43 @@ function QSRBackend() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {activeTab === 'orders' && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Orders</h2>
-              {orders.filter(order => order.status !== 'completed').length === 0 ? (
-                <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                  <p className="text-gray-500 text-lg">No active orders</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {orders.filter(order => order.status !== 'completed').map(order => (
+            {/* Order Sub-tabs */}
+            <div className="bg-white border-b border-gray-200 rounded-t-lg">
+              <div className="flex">
+                <button
+                  onClick={() => setOrderSubTab('active')}
+                  className={`flex-1 px-6 py-3 font-medium transition-all rounded-t-lg ${
+                    orderSubTab === 'active'
+                      ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  Active Orders
+                </button>
+                <button
+                  onClick={() => setOrderSubTab('completed')}
+                  className={`flex-1 px-6 py-3 font-medium transition-all rounded-t-lg ${
+                    orderSubTab === 'completed'
+                      ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  Completed Orders
+                </button>
+              </div>
+            </div>
+
+            {/* Active Orders Tab */}
+            {orderSubTab === 'active' && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Orders</h2>
+                {orders.filter(order => order.status !== 'completed').length === 0 ? (
+                  <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                    <p className="text-gray-500 text-lg">No active orders</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {orders.filter(order => order.status !== 'completed').map(order => (
                   <div key={order.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
                     <div className="flex items-start justify-between mb-4">
                       <div>
@@ -347,16 +376,23 @@ function QSRBackend() {
                       </button>
                     </div>
                   </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-            {orders.filter(order => order.status === 'completed').length > 0 && (
+            {/* Completed Orders Tab */}
+            {orderSubTab === 'completed' && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Completed Orders</h2>
-                <div className="space-y-3">
-                  {orders.filter(order => order.status === 'completed').map(order => (
+                {orders.filter(order => order.status === 'completed').length === 0 ? (
+                  <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                    <p className="text-gray-500 text-lg">No completed orders</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {orders.filter(order => order.status === 'completed').map(order => (
                     <div key={order.id} className="bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -392,8 +428,9 @@ function QSRBackend() {
                         </p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
