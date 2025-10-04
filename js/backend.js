@@ -5,14 +5,15 @@ const { useState, useEffect } = React;
 
 function QSRBackend() {
   const [activeTab, setActiveTab] = useState('orders');
+  const [menuTab, setMenuTab] = useState('kitchen');
   const [menuItems, setMenuItems] = useState([
-    { id: 1, name: 'Masala Dosa', price: 80 },
-    { id: 2, name: 'Idli Sambhar', price: 60 },
-    { id: 3, name: 'Filter Coffee', price: 40 },
-    { id: 4, name: 'Vada', price: 50 }
+    { id: 1, name: 'Masala Dosa', price: 80, category: 'Kitchen' },
+    { id: 2, name: 'Idli Sambhar', price: 60, category: 'Kitchen' },
+    { id: 3, name: 'Filter Coffee', price: 40, category: 'Bar' },
+    { id: 4, name: 'Vada', price: 50, category: 'Kitchen' }
   ]);
   const [orders, setOrders] = useState([]);
-  const [newItem, setNewItem] = useState({ name: '', price: '' });
+  const [newItem, setNewItem] = useState({ name: '', price: '', category: 'Kitchen' });
   const [cart, setCart] = useState({});
   const [editingOrder, setEditingOrder] = useState(null);
 
@@ -31,13 +32,14 @@ function QSRBackend() {
   };
 
   const addMenuItem = () => {
-    if (newItem.name && newItem.price) {
+    if (newItem.name && newItem.price && newItem.category) {
       setMenuItems([...menuItems, {
         id: Date.now(),
         name: newItem.name,
-        price: parseFloat(newItem.price)
+        price: parseFloat(newItem.price),
+        category: newItem.category
       }]);
-      setNewItem({ name: '', price: '' });
+      setNewItem({ name: '', price: '', category: 'Kitchen' });
     }
   };
 
@@ -377,48 +379,94 @@ function QSRBackend() {
         )}
 
         {activeTab === 'menu' && (
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Menu Items</h2>
-              
-              <div className="space-y-3 mb-6">
-                <input
-                  type="text"
-                  placeholder="Item name"
-                  value={newItem.name}
-                  onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                />
-                <input
-                  type="number"
-                  placeholder="Price"
-                  value={newItem.price}
-                  onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                />
-                <button
-                  onClick={addMenuItem}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
-                >
-                  + Add Menu Item
-                </button>
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="border-b border-gray-200">
+                <div className="flex">
+                  <button
+                    onClick={() => setMenuTab('kitchen')}
+                    className={`flex-1 px-6 py-3 font-medium transition-all ${
+                      menuTab === 'kitchen'
+                        ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    🍽️ Kitchen Menu
+                  </button>
+                  <button
+                    onClick={() => setMenuTab('bar')}
+                    className={`flex-1 px-6 py-3 font-medium transition-all ${
+                      menuTab === 'bar'
+                        ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    🍹 Bar Menu
+                  </button>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                {menuItems.map(item => (
-                  <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div>
-                      <div className="font-semibold text-gray-900">{item.name}</div>
-                      <div className="text-orange-600 font-medium">₹{item.price}</div>
+              <div className="p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {menuTab === 'kitchen' ? 'Kitchen Items' : 'Bar Items'}
+                </h2>
+                
+                <div className="space-y-3 mb-6">
+                  <input
+                    type="text"
+                    placeholder="Item name"
+                    value={newItem.name}
+                    onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={newItem.price}
+                    onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      setNewItem({ ...newItem, category: menuTab === 'kitchen' ? 'Kitchen' : 'Bar' });
+                      addMenuItem();
+                    }}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+                  >
+                    + Add {menuTab === 'kitchen' ? 'Kitchen' : 'Bar'} Item
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {menuItems
+                    .filter(item => item.category === (menuTab === 'kitchen' ? 'Kitchen' : 'Bar'))
+                    .map(item => (
+                    <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div>
+                        <div className="font-semibold text-gray-900">{item.name}</div>
+                        <div className="text-orange-600 font-medium">₹{item.price}</div>
+                        <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
+                          item.category === 'Bar' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                        }`}>
+                          {item.category}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deleteMenuItem(item.id)}
+                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                      >
+                        ✕
+                      </button>
                     </div>
-                    <button
-                      onClick={() => deleteMenuItem(item.id)}
-                      className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                  
+                  {menuItems.filter(item => item.category === (menuTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <p className="text-lg">No {menuTab} items yet</p>
+                      <p className="text-sm">Add some items to get started</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
