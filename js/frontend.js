@@ -2,6 +2,7 @@ const { useState, useEffect } = React;
 
 function QSRTVDisplay() {
   const [orders, setOrders] = useState([]);
+  const [boardType, setBoardType] = useState('kitchen'); // 'kitchen' or 'bar'
 
   useEffect(() => {
     const loadOrders = () => {
@@ -41,14 +42,49 @@ function QSRTVDisplay() {
   };
 
   const getOrdersByStatus = (status) => {
-    return orders.filter(order => order.status === status);
+    return orders.filter(order => {
+      if (order.status !== status) return false;
+      
+      // Filter by board type (kitchen or bar)
+      if (boardType === 'kitchen') {
+        return order.queue === 'Kitchen' || order.queue === 'Both';
+      } else {
+        return order.queue === 'Bar' || order.queue === 'Both';
+      }
+    });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-8">
-      <div className="text-center mb-12">
-        <h1 className="text-6xl font-bold text-gray-900 mb-3">Order Status Board</h1>
-        <p className="text-2xl text-gray-600">Please wait for your token to be called</p>
+      <div className="text-center mb-8">
+        <h1 className="text-6xl font-bold text-gray-900 mb-3">
+          {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Bar'} Order Status Board
+        </h1>
+        <p className="text-2xl text-gray-600 mb-6">Please wait for your token to be called</p>
+        
+        {/* Board Type Selector */}
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={() => setBoardType('kitchen')}
+            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              boardType === 'kitchen'
+                ? 'bg-orange-500 text-white shadow-lg'
+                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            🍽️ Kitchen Board
+          </button>
+          <button
+            onClick={() => setBoardType('bar')}
+            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              boardType === 'bar'
+                ? 'bg-blue-500 text-white shadow-lg'
+                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            🍹 Bar Board
+          </button>
+        </div>
       </div>
 
       {/* Kanban Board */}
@@ -64,7 +100,11 @@ function QSRTVDisplay() {
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('pending').map(order => (
-              <div key={order.id} className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+              <div key={order.id} className={`border rounded-xl p-4 ${
+                order.queue === 'Kitchen' || order.queue === 'Both' 
+                  ? 'bg-yellow-100 border-yellow-300' 
+                  : 'bg-yellow-100 border-yellow-300'
+              }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   <div className="text-yellow-600 text-xl">⏰</div>
@@ -86,7 +126,7 @@ function QSRTVDisplay() {
             {getOrdersByStatus('pending').length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 <div className="text-4xl mb-2">⏰</div>
-                <p className="text-sm">No pending orders</p>
+                <p className="text-sm">No pending {boardType} orders</p>
               </div>
             )}
           </div>
@@ -103,7 +143,11 @@ function QSRTVDisplay() {
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('preparing').map(order => (
-              <div key={order.id} className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div key={order.id} className={`border rounded-xl p-4 ${
+                order.queue === 'Kitchen' || order.queue === 'Both' 
+                  ? 'bg-blue-100 border-blue-300' 
+                  : 'bg-blue-100 border-blue-300'
+              }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   <div className="text-blue-600 text-xl">👨‍🍳</div>
@@ -125,7 +169,7 @@ function QSRTVDisplay() {
             {getOrdersByStatus('preparing').length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 <div className="text-4xl mb-2">👨‍🍳</div>
-                <p className="text-sm">No orders preparing</p>
+                <p className="text-sm">No {boardType} orders preparing</p>
               </div>
             )}
           </div>
@@ -142,7 +186,11 @@ function QSRTVDisplay() {
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('ready').map(order => (
-              <div key={order.id} className="bg-green-50 border border-green-200 rounded-xl p-4">
+              <div key={order.id} className={`border rounded-xl p-4 ${
+                order.queue === 'Kitchen' || order.queue === 'Both' 
+                  ? 'bg-green-100 border-green-300' 
+                  : 'bg-green-100 border-green-300'
+              }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   <div className="text-green-600 text-xl">✅</div>
@@ -164,7 +212,7 @@ function QSRTVDisplay() {
             {getOrdersByStatus('ready').length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 <div className="text-4xl mb-2">✅</div>
-                <p className="text-sm">No orders ready</p>
+                <p className="text-sm">No {boardType} orders ready</p>
               </div>
             )}
           </div>
@@ -181,7 +229,11 @@ function QSRTVDisplay() {
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('delivered').map(order => (
-              <div key={order.id} className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <div key={order.id} className={`border rounded-xl p-4 ${
+                order.queue === 'Kitchen' || order.queue === 'Both' 
+                  ? 'bg-purple-100 border-purple-300' 
+                  : 'bg-purple-100 border-purple-300'
+              }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   <div className="text-purple-600 text-xl">🎉</div>
@@ -208,7 +260,7 @@ function QSRTVDisplay() {
             {getOrdersByStatus('delivered').length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 <div className="text-4xl mb-2">🎉</div>
-                <p className="text-sm">No delivered orders</p>
+                <p className="text-sm">No delivered {boardType} orders</p>
               </div>
             )}
           </div>
