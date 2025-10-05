@@ -311,7 +311,7 @@ function QSRBackend() {
       console.log('Menu item deleted from Firestore:', id);
       
       // Update local state
-      setMenuItems(menuItems.filter(item => item.id !== id));
+    setMenuItems(menuItems.filter(item => item.id !== id));
     } catch (error) {
       console.error('Error deleting menu item from Firestore:', error);
       alert('Error deleting menu item. Please try again.');
@@ -453,7 +453,7 @@ function QSRBackend() {
       
       return cleanItem;
     });
-    
+
     const newOrder = {
       id: orderId,
       token: generateToken(queue),
@@ -511,8 +511,8 @@ function QSRBackend() {
       console.log('Order saved successfully to Firestore with ID:', orderId);
       
       // Update local state
-      setOrders([newOrder, ...orders]);
-      setCart({});
+    setOrders([newOrder, ...orders]);
+    setCart({});
       setSelectedTable(''); // Clear selected table
     } catch (error) {
       console.error('Error saving order to Firestore:', error);
@@ -589,7 +589,7 @@ function QSRBackend() {
       console.log('Order status updated in Firestore:', orderId, newStatus);
       
       // Update local state
-      setOrders(orders.map(order => 
+    setOrders(orders.map(order => 
         order.id === orderId ? { ...order, status: newStatus, updatedAt: new Date().toISOString() } : order
       ));
       
@@ -619,7 +619,7 @@ function QSRBackend() {
       console.log('Order delivered in Firestore:', orderId);
       
       // Update local state
-      setOrders(orders.map(order => 
+    setOrders(orders.map(order => 
         order.id === orderId ? { ...order, ...deliveredData } : order
       ));
       
@@ -672,7 +672,7 @@ function QSRBackend() {
         console.log('Order cancelled in Firestore:', orderId);
         
         // Remove from local state
-        setOrders(orders.filter(order => order.id !== orderId));
+      setOrders(orders.filter(order => order.id !== orderId));
       } catch (error) {
         console.error('Error cancelling order in Firestore:', error);
         alert('Error cancelling order. Please try again.');
@@ -773,6 +773,20 @@ function QSRBackend() {
               <p className="text-sm text-gray-500">TOKENIK (RESTAURANT TOKEN APP)</p>
             </div>
             <div className="flex items-center gap-4">
+              {/* Pikonik Logo */}
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
+                  </svg>
+                </div>
+                <div className="text-right">
+                  <h3 className="text-sm font-bold text-gray-800">Pikonik™</h3>
+                  <p className="text-xs text-gray-600">Powered by Tokenik</p>
+                </div>
+              </div>
+              
               <div className="flex items-center gap-2">
                 {user.photoURL && (
                   <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full" />
@@ -785,7 +799,7 @@ function QSRBackend() {
               >
                 Sign Out
               </button>
-              <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">← Back to Home</a>
+            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">← Back to Home</a>
             </div>
           </div>
         </div>
@@ -838,7 +852,7 @@ function QSRBackend() {
                   Order Type:
                 </label>
                 <div className="flex gap-2">
-                  <button
+                <button
                     onClick={() => {
                       setOrderMainTab('active');
                       setOrderSubTab('kitchen'); // Reset to default sub-tab for active orders
@@ -851,8 +865,8 @@ function QSRBackend() {
                     }`}
                   >
                     📋 Active Orders
-                  </button>
-                  <button
+                </button>
+                <button
                     onClick={() => {
                       setOrderMainTab('completed');
                       setOrderSubTab('pending'); // Default to pending billing when switching to completed
@@ -865,7 +879,7 @@ function QSRBackend() {
                     }`}
                   >
                     ✅ Completed Orders
-                  </button>
+                </button>
                 </div>
               </div>
             </div>
@@ -1229,29 +1243,29 @@ function QSRBackend() {
                         <div className="text-center py-12">
                           <p className="text-gray-500 text-lg">No pending billing orders</p>
                           <p className="text-gray-400 text-sm">Delivered orders waiting for billing will appear here</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
+                  </div>
+                ) : (
+                  <div className="space-y-3">
                           {pendingBillingOrders.map(order => (
                             <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
                               order.queue === 'Kitchen' || order.queue === 'Both' 
                                 ? 'bg-pink-50 border-pink-200' 
                                 : 'bg-blue-50 border-blue-200'
                             }`}>
-                              <div className="flex items-start justify-between mb-4">
-                                <div>
-                                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                  <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                          <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
                                   {order.tableNumber && (
                                     <div className="text-sm font-medium text-blue-600 mt-1">
                                       🏷️ Table: {order.tableNumber}
                                     </div>
                                   )}
                                   {order.deliveredAt && (
-                                    <div className="text-xs text-gray-400">
+                            <div className="text-xs text-gray-400">
                                       Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
-                                    </div>
-                                  )}
+                            </div>
+                          )}
                                   {order.queue && (
                                     <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
                                       order.queue === 'Bar' ? 'bg-blue-100 text-blue-800' :
@@ -1259,24 +1273,24 @@ function QSRBackend() {
                                       'bg-purple-100 text-purple-800'
                                     }`}>
                                       {order.queue} Queue
-                                    </div>
+                        </div>
                                   )}
-                                </div>
-                              </div>
-                              
-                              <div className="bg-white rounded-lg p-4 mb-4">
-                                {order.items.map((item, idx) => (
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white rounded-lg p-4 mb-4">
+                        {order.items.map((item, idx) => (
                                   <div key={idx} className="flex justify-between text-lg py-2">
-                                    <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                    <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
-                                  </div>
-                                ))}
+                            <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                            <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                          </div>
+                        ))}
                                 <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                  <span>Total</span>
-                                  <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
-                                </div>
-                              </div>
-                              
+                          <span>Total</span>
+                          <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                        </div>
+                      </div>
+                      
                               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                                 <p className="text-gray-900 font-medium text-center mb-3">
                                   Order delivered - Ready for billing completion
@@ -1287,9 +1301,9 @@ function QSRBackend() {
                                 >
                                   Billing Completed
                                 </button>
-                              </div>
-                            </div>
-                          ))}
+                      </div>
+                    </div>
+                    ))}
                         </div>
                       );
                     })()}
@@ -1357,18 +1371,18 @@ function QSRBackend() {
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
-                                              </div>
-                                            )}
+              </div>
+            )}
                                             {order.deliveredAt && (
                                               <div className="text-xs text-gray-400">
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
-                                              </div>
-                                            )}
+          </div>
+        )}
                                             {order.billingCompletedAt && (
                                               <div className="text-xs text-gray-400">
                                                 Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
-                                              </div>
-                                            )}
+              </div>
+            )}
                                             {order.queue && (
                                               <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-green-100 text-green-800">
                                                 {order.queue} Queue
@@ -1394,8 +1408,8 @@ function QSRBackend() {
                                           <p className="text-green-800 font-medium text-center">
                                             ✅ Billing Completed
                                           </p>
-                                        </div>
-                                      </div>
+                  </div>
+                </div>
                                     ))}
                                   </div>
                                 </div>
@@ -1403,14 +1417,14 @@ function QSRBackend() {
                               
                               {/* Bar Completed Billing */}
                               {barOrders.length > 0 && (
-                                <div>
+                        <div>
                                   <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">Completed Cafe/Bar Orders</h3>
                                     <div className="flex justify-between items-center">
                                       <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
                                       <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
-                                    </div>
-                                  </div>
+                        </div>
+                        </div>
                                   <div className="space-y-3">
                                     {barOrders.map(order => (
                                       <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
@@ -1423,26 +1437,26 @@ function QSRBackend() {
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
-                                              </div>
+                      </div>
                                             )}
                                             {order.deliveredAt && (
                                               <div className="text-xs text-gray-400">
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
-                                              </div>
+                          </div>
                                             )}
                                             {order.billingCompletedAt && (
                                               <div className="text-xs text-gray-400">
                                                 Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
-                                              </div>
-                                            )}
+                          </div>
+                        )}
                                             {order.queue && (
                                               <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-blue-100 text-blue-800">
                                                 {order.queue} Queue
                                               </div>
                                             )}
                                           </div>
-                                        </div>
-                                        
+                      </div>
+                      
                                         <div className="bg-white rounded-lg p-4 mb-4">
                                           {order.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-lg py-2">
@@ -1451,22 +1465,22 @@ function QSRBackend() {
                                             </div>
                                           ))}
                                           <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                            <span>Total</span>
+                          <span>Total</span>
                                             <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
-                                          </div>
-                                        </div>
+                        </div>
+                      </div>
                                         
                                         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                                           <p className="text-green-800 font-medium text-center">
                                             ✅ Billing Completed
                                           </p>
                                         </div>
-                                      </div>
-                                    ))}
+                    </div>
+                  ))}
                                   </div>
-                                </div>
-                              )}
-                            </div>
+                </div>
+              )}
+            </div>
                           )}
                         </div>
                       );
@@ -1527,8 +1541,8 @@ function QSRBackend() {
                     </button>
                   )}
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {(() => {
                     console.log('=== TAKE ORDER MENU ITEMS DEBUG ===');
                     console.log('All menu items:', menuItems);
@@ -1736,7 +1750,7 @@ function QSRBackend() {
                   >
                     🍹 Cafe/Bar Menu
                   </button>
-                </div>
+                  </div>
               </div>
 
               <div className="p-6">
@@ -1745,20 +1759,20 @@ function QSRBackend() {
                 </h2>
                 
                 <div className="space-y-3 mb-6">
-                  <input
-                    type="text"
-                    placeholder="Item name"
-                    value={newItem.name}
-                    onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Price"
-                    value={newItem.price}
-                    onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
-                  />
+                <input
+                  type="text"
+                  placeholder="Item name"
+                  value={newItem.name}
+                  onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={newItem.price}
+                  onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                />
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -1770,17 +1784,17 @@ function QSRBackend() {
                       {editingMenuItem ? 'Update Item' : `+ Add ${menuTab === 'kitchen' ? 'Kitchen' : 'Cafe/Bar'} Item`}
                     </button>
                     {editingMenuItem && (
-                      <button
+                    <button
                         onClick={cancelEditMenuItem}
                         className="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
                       >
                         Cancel
-                      </button>
-                    )}
+                  </button>
+                )}
                   </div>
-                </div>
+              </div>
 
-                <div className="space-y-2">
+              <div className="space-y-2">
                   {(() => {
                     const filteredItems = menuItems.filter(item => item.category === (menuTab === 'kitchen' ? 'Kitchen' : 'Bar'));
                     console.log('Filtering items for tab:', menuTab);
@@ -1789,34 +1803,34 @@ function QSRBackend() {
                     return filteredItems;
                   })()
                       .map(item => (
-                    <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div>
-                        <div className="font-semibold text-gray-900">{item.name}</div>
-                        <div className="text-orange-600 font-medium">₹{item.price}</div>
+                  <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div>
+                      <div className="font-semibold text-gray-900">{item.name}</div>
+                      <div className="text-orange-600 font-medium">₹{item.price}</div>
                         <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
                           item.category === 'Bar' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                         }`}>
                           {item.category}
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => startEditMenuItem(item)}
-                          className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                          title="Edit Item"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => deleteMenuItem(item.id)}
-                          className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                          title="Delete Item"
-                        >
-                          ✕
-                        </button>
-                      </div>
                     </div>
-                  ))}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEditMenuItem(item)}
+                        className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                        title="Edit Item"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => deleteMenuItem(item.id)}
+                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                        title="Delete Item"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
                   
                   {menuItems.filter(item => item.category === (menuTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
                     <div className="text-center py-8 text-gray-500">
@@ -1830,16 +1844,16 @@ function QSRBackend() {
                           Add Sample Menu Items
                         </button>
                       )}
-                    </div>
-                  )}
-                </div>
               </div>
+                  )}
             </div>
           </div>
-        )}
       </div>
     </div>
-  );
-}
+        )}
+          </div>
+        </div>
+      );
+    }
 
 ReactDOM.render(<QSRBackend />, document.getElementById('root'));

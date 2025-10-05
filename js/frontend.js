@@ -178,20 +178,27 @@ function QSRTVDisplay() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-8">
+      {/* Header with Pikonik Logo */}
+      <div className="flex justify-between items-center mb-8">
+        <div></div>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center">
+            <svg className="w-8 h-8 text-gray-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
+            </svg>
+          </div>
+          <div className="text-right">
+            <h2 className="text-lg font-bold text-gray-800">Pikonik™</h2>
+            <p className="text-xs text-gray-600">Powered by Tokenik</p>
+          </div>
+        </div>
+      </div>
+      
       <div className="text-center mb-8">
         <h1 className="text-6xl font-bold text-gray-900 mb-3">
           {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Cafe/Bar'} Order Status Board
         </h1>
-        {user && (
-          <div className="mb-4">
-            <button
-              onClick={testConnection}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-            >
-              Test Connection
-            </button>
-          </div>
-        )}
         
         {/* Board Type Selector */}
         <div className="flex justify-center gap-4">
