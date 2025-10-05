@@ -3,19 +3,75 @@ const { useState, useEffect } = React;
 function QSRTVDisplay() {
   const [orders, setOrders] = useState([]);
   const [boardType, setBoardType] = useState('kitchen'); // 'kitchen' or 'bar'
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Authentication effect
+  useEffect(() => {
+    const unsubscribe = window.Firebase.onAuthStateChanged(window.Firebase.getAuth(window.Firebase.initializeApp({
+      apiKey: "AIzaSyDLsNt7R642AlKOQXi7v2ZSXyo799PLdY8",
+      authDomain: "tokenik-manage-kitchen-orders.firebaseapp.com",
+      projectId: "tokenik-manage-kitchen-orders",
+      storageBucket: "tokenik-manage-kitchen-orders.firebasestorage.app",
+      messagingSenderId: "425760092391",
+      appId: "1:425760092391:web:95534c87d30a21b8d6f242",
+      measurementId: "G-NEPZ5XVTKW"
+    })), async (user) => {
+      if (user) {
+        setUser(user);
+        await loadUserOrders(user.uid);
+      } else {
+        setUser(null);
+        window.location.href = 'login.html';
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Load user-specific orders from Firestore
+  const loadUserOrders = async (userId) => {
+    try {
+      const db = window.Firebase.getFirestore(window.Firebase.initializeApp({
+        apiKey: "AIzaSyDLsNt7R642AlKOQXi7v2ZSXyo799PLdY8",
+        authDomain: "tokenik-manage-kitchen-orders.firebaseapp.com",
+        projectId: "tokenik-manage-kitchen-orders",
+        storageBucket: "tokenik-manage-kitchen-orders.firebasestorage.app",
+        messagingSenderId: "425760092391",
+        appId: "1:425760092391:web:95534c87d30a21b8d6f242",
+        measurementId: "G-NEPZ5XVTKW"
+      }));
+      
+      const ordersRef = window.Firebase.collection(db, 'users', userId, 'orders');
+      const ordersSnapshot = await window.Firebase.getDocs(ordersRef);
+      const userOrders = [];
+      
+      ordersSnapshot.forEach((doc) => {
+        const orderData = doc.data();
+        if (!orderData.deleted) {
+          userOrders.push({ id: doc.id, ...orderData });
+        }
+      });
+      
+      // Sort by createdAt descending
+      userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      setOrders(userOrders);
+    } catch (error) {
+      console.error('Error loading user orders:', error);
+      setOrders([]);
+    }
+  };
 
   useEffect(() => {
-    const loadOrders = () => {
-      const savedOrders = JSON.parse(localStorage.getItem('qsrOrders') || '[]');
-      // Include all orders including delivered for Kanban board
-      setOrders(savedOrders);
-    };
-
-    loadOrders();
-    const interval = setInterval(loadOrders, 2000);
+    if (!user) return;
+    
+    const interval = setInterval(() => {
+      loadUserOrders(user.uid);
+    }, 2000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -54,6 +110,18 @@ function QSRTVDisplay() {
     });
   };
 
+  // Show loading screen while authenticating
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-8">
       <div className="text-center mb-8">
@@ -61,6 +129,11 @@ function QSRTVDisplay() {
           {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Bar'} Order Status Board
         </h1>
         <p className="text-2xl text-gray-600 mb-6">Please wait for your token to be called</p>
+        {user && (
+          <p className="text-sm text-gray-500 mb-4">
+            Displaying orders for: {user.displayName || user.email}
+          </p>
+        )}
         
         {/* Board Type Selector */}
         <div className="flex justify-center gap-4">

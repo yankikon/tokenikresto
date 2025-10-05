@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokenik (Restaurant Token App) - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLsNt7R642AlKOQXi7v2ZSXyo799PLdY8",
+            authDomain: "tokenik-manage-kitchen-orders.firebaseapp.com",
+            projectId: "tokenik-manage-kitchen-orders",
+            storageBucket: "tokenik-manage-kitchen-orders.firebasestorage.app",
+            messagingSenderId: "425760092391",
+            appId: "1:425760092391:web:95534c87d30a21b8d6f242",
+            measurementId: "G-NEPZ5XVTKW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                // Update user info in the UI
+                const userInfo = document.getElementById('user-info');
+                if (user.photoURL) {
+                    userInfo.innerHTML = `
+                        <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full mr-2">
+                        <span class="text-sm text-gray-700">${user.displayName || user.email}</span>
+                    `;
+                } else {
+                    userInfo.innerHTML = `<span class="text-sm text-gray-700">${user.displayName || user.email}</span>`;
+                }
+            }
+        });
+
+        // Sign out function
+        async function signOutUser() {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        }
+
+        // Make signOutUser available globally
+        window.signOutUser = signOutUser;
+    </script>
+</head>
+<body class="bg-gradient-to-br from-orange-50 to-red-50 min-h-screen flex items-center justify-center p-8">
+    <div class="max-w-6xl w-full">
+        <!-- Header -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">🍛 TOKENIK</h1>
+                    <p class="text-xl text-gray-600">Restaurant Token Management System</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div id="user-info" class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+                        <div class="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                    <button
+                        onclick="signOutUser()"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    >
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Manager Card -->
+            <a href="backend.html" class="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform group">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-orange-600 transition-colors">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">Manager Dashboard</h2>
+                    <p class="text-gray-600 mb-6">Take orders, manage menu, and update order status</p>
+                    <div class="bg-orange-500 text-white px-6 py-3 rounded-lg font-medium inline-block group-hover:bg-orange-600 transition-colors">
+                        Open Dashboard
+                    </div>
+                </div>
+            </a>
+
+            <!-- TV Display Card -->
+            <a href="frontend.html" class="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform group">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-600 transition-colors">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">TV Display</h2>
+                    <p class="text-gray-600 mb-6">Kitchen/Customer-facing order status board. Open on a new browser and display on your TV, Tablet or Monitor</p>
+                    <div class="bg-green-500 text-white px-6 py-3 rounded-lg font-medium inline-block group-hover:bg-green-600 transition-colors">
+                        Open Display
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Features Info -->
+        <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-3">📌 Features</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">🍽️ Manager Dashboard</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• Take orders with Kitchen/Bar separation</li>
+                        <li>• Manage menu items with categories</li>
+                        <li>• Update order status (Pending → Ready → Delivered)</li>
+                        <li>• Sequential order numbering (K-0001, B-0001)</li>
+                        <li>• Billing completion tracking</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-2">📺 TV Display</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• Real-time order status board</li>
+                        <li>• Kanban-style columns (Pending, Preparing, Ready, Delivered)</li>
+                        <li>• Separate Kitchen and Bar displays</li>
+                        <li>• Color-coded order cards</li>
+                        <li>• Auto-refresh for live updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Setup -->
+        <div class="mt-8 bg-blue-50 rounded-xl p-6">
+            <h3 class="text-lg font-bold text-blue-900 mb-2">🚀 Quick Setup</h3>
+            <ol class="text-sm text-blue-800 space-y-1">
+                <li>1. Open <strong>Manager Dashboard</strong> on your device to take orders</li>
+                <li>2. Open <strong>TV Display</strong> on your TV/tablet browser (press F11 for fullscreen)</li>
+                <li>3. Both modules will show your personal orders and data</li>
+                <li>4. Start taking orders and watch them appear on the TV!</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

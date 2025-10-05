@@ -62,15 +62,21 @@ function QSRBackend() {
       localStorage.removeItem('qsrOrders');
       localStorage.removeItem('qsrMenuItems');
       
-      // Load orders
+      // Load orders - simplified query to avoid index requirements
       const ordersRef = window.Firebase.collection(db, 'users', userId, 'orders');
-      const ordersQuery = window.Firebase.query(ordersRef, window.Firebase.where('deleted', '!=', true), window.Firebase.orderBy('createdAt', 'desc'));
-      const ordersSnapshot = await window.Firebase.getDocs(ordersQuery);
+      const ordersSnapshot = await window.Firebase.getDocs(ordersRef);
       const userOrders = [];
       
       ordersSnapshot.forEach((doc) => {
-        userOrders.push({ id: doc.id, ...doc.data() });
+        const orderData = doc.data();
+        // Filter out deleted orders and sort by createdAt
+        if (!orderData.deleted) {
+          userOrders.push({ id: doc.id, ...orderData });
+        }
       });
+      
+      // Sort by createdAt descending
+      userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
       
       setOrders(userOrders);
 
