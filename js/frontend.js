@@ -69,13 +69,33 @@ function QSRTVDisplay() {
   };
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !window.Firebase || !window.firebaseDb) return;
     
-    const interval = setInterval(() => {
-      loadUserOrders(user.uid);
-    }, 2000);
+    console.log('Setting up real-time listener for user:', user.uid);
+    const ordersRef = window.Firebase.collection(window.firebaseDb, 'users', user.uid, 'orders');
+    
+    // Set up real-time listener
+    const unsubscribe = window.Firebase.onSnapshot(ordersRef, (snapshot) => {
+      const userOrders = [];
+      snapshot.forEach((doc) => {
+        const orderData = doc.data();
+        if (!orderData.deleted) {
+          userOrders.push({ id: doc.id, ...orderData });
+        }
+      });
+      
+      // Sort by createdAt descending
+      userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      console.log('Real-time orders update:', userOrders);
+      setOrders(userOrders);
+    }, (error) => {
+      console.error('Error in real-time listener:', error);
+    });
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('Cleaning up real-time listener');
+      unsubscribe();
+    };
   }, [user]);
 
   const getStatusColor = (status) => {

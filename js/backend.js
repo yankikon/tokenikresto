@@ -188,12 +188,30 @@ function QSRBackend() {
   //   }
   // }, [orders, user]);
 
-  // Update menu items effect - disabled automatic saving to prevent conflicts
-  // useEffect(() => {
-  //   if (user && menuItems.length > 0) {
-  //     saveMenuItemsToFirestore(menuItems);
-  //   }
-  // }, [menuItems, user]);
+  // Real-time listener for menu items
+  useEffect(() => {
+    if (!user) return;
+    
+    console.log('Setting up real-time listener for menu items, user:', user.uid);
+    const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
+    
+    const unsubscribe = window.Firebase.onSnapshot(menuRef, (snapshot) => {
+      const userMenuItems = [];
+      snapshot.forEach((doc) => {
+        userMenuItems.push({ id: doc.id, ...doc.data() });
+      });
+      
+      console.log('Real-time menu items update:', userMenuItems);
+      setMenuItems(userMenuItems);
+    }, (error) => {
+      console.error('Error in menu items listener:', error);
+    });
+
+    return () => {
+      console.log('Cleaning up menu items listener');
+      unsubscribe();
+    };
+  }, [user]);
 
   const generateToken = (queue) => {
     let counterKey = 'kitchen';
@@ -221,11 +239,11 @@ function QSRBackend() {
     return `T-${paddedNumber}`; // fallback
   };
 
-  const addMenuItem = () => {
+  const addMenuItem = async () => {
     console.log('Adding menu item:', newItem);
-    if (newItem.name && newItem.price ) {
+    if (newItem.name && newItem.price) {
       if (editingMenuItem) {
-        updateMenuItem();
+        await updateMenuItem();
       } else {
         const category = menuTab === 'kitchen' ? 'Kitchen' : 'Bar';
         const menuItemId = Date.now().toString();
@@ -238,19 +256,39 @@ function QSRBackend() {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-        console.log('Adding menu item:', newMenuItem);
-        console.log('Current menuTab:', menuTab);
-        console.log('Current menuItems:', menuItems);
-        setMenuItems([...menuItems, newMenuItem]);
-        setNewItem({ name: '', price: '' , category: '' });
+        
+        try {
+          // Save to Firestore
+          const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
+          await window.Firebase.setDoc(window.Firebase.doc(menuRef, menuItemId), newMenuItem);
+          console.log('Menu item saved to Firestore:', newMenuItem);
+          
+          // Update local state
+          setMenuItems([...menuItems, newMenuItem]);
+          setNewItem({ name: '', price: '', category: '' });
+        } catch (error) {
+          console.error('Error saving menu item to Firestore:', error);
+          alert('Error saving menu item. Please try again.');
+        }
       }
     } else {
       console.log('Validation failed:', { name: newItem.name, price: newItem.price });
     }
   };
 
-  const deleteMenuItem = (id) => {
-    setMenuItems(menuItems.filter(item => item.id !== id));
+  const deleteMenuItem = async (id) => {
+    try {
+      // Delete from Firestore
+      const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
+      await window.Firebase.deleteDoc(window.Firebase.doc(menuRef, id));
+      console.log('Menu item deleted from Firestore:', id);
+      
+      // Update local state
+      setMenuItems(menuItems.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Error deleting menu item from Firestore:', error);
+      alert('Error deleting menu item. Please try again.');
+    }
   };
 
   const startEditMenuItem = (item) => {
@@ -258,16 +296,35 @@ function QSRBackend() {
     setNewItem({ name: item.name, price: item.price.toString(), category: item.category });
   };
 
-  const updateMenuItem = () => {
+  const updateMenuItem = async () => {
     if (newItem.name && newItem.price) {
       const category = menuTab === 'kitchen' ? 'Kitchen' : 'Bar';
-      setMenuItems(menuItems.map(item => 
-        item.id === editingMenuItem 
-          ? { ...item, name: newItem.name, price: parseFloat(newItem.price), category: category }
-          : item
-      ));
-      setNewItem({ name: '', price: '', category: '' });
-      setEditingMenuItem(null);
+      const updatedMenuItem = {
+        name: newItem.name.trim(),
+        price: parseFloat(newItem.price),
+        category: category,
+        userId: user.uid,
+        updatedAt: new Date().toISOString()
+      };
+      
+      try {
+        // Update in Firestore
+        const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
+        await window.Firebase.setDoc(window.Firebase.doc(menuRef, editingMenuItem), updatedMenuItem, { merge: true });
+        console.log('Menu item updated in Firestore:', updatedMenuItem);
+        
+        // Update local state
+        setMenuItems(menuItems.map(item => 
+          item.id === editingMenuItem 
+            ? { ...item, ...updatedMenuItem }
+            : item
+        ));
+        setNewItem({ name: '', price: '', category: '' });
+        setEditingMenuItem(null);
+      } catch (error) {
+        console.error('Error updating menu item in Firestore:', error);
+        alert('Error updating menu item. Please try again.');
+      }
     }
   };
 
@@ -409,39 +466,101 @@ function QSRBackend() {
     }
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
-    
-    // Track current status for this order
-    setOrderCurrentStatus(prev => ({
-      ...prev,
-      [orderId]: newStatus
-    }));
-  };
-
-  const deliverOrder = (orderId) => {
-    setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: 'delivered', deliveredAt: new Date().toISOString(), billingStatus: 'pending_billing' } : order
-    ));
-    
-    // Track current status for this order
-    setOrderCurrentStatus(prev => ({
-      ...prev,
-      [orderId]: 'delivered'
-    }));
-  };
-
-  const completeBilling = (orderId) => {
-    if (confirm('Are you sure you have completed this billing on pikonik?')) {
-      setOrders(orders.filter(order => order.id !== orderId));
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      // Update in Firestore
+      const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
+      await window.Firebase.setDoc(window.Firebase.doc(ordersRef, orderId), {
+        status: newStatus,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+      console.log('Order status updated in Firestore:', orderId, newStatus);
+      
+      // Update local state
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, status: newStatus, updatedAt: new Date().toISOString() } : order
+      ));
+      
+      // Track current status for this order
+      setOrderCurrentStatus(prev => ({
+        ...prev,
+        [orderId]: newStatus
+      }));
+    } catch (error) {
+      console.error('Error updating order status in Firestore:', error);
+      alert('Error updating order status. Please try again.');
     }
   };
 
-  const deleteOrder = (orderId) => {
+  const deliverOrder = async (orderId) => {
+    try {
+      const deliveredData = {
+        status: 'delivered',
+        deliveredAt: new Date().toISOString(),
+        billingStatus: 'pending_billing',
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Update in Firestore
+      const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
+      await window.Firebase.setDoc(window.Firebase.doc(ordersRef, orderId), deliveredData, { merge: true });
+      console.log('Order delivered in Firestore:', orderId);
+      
+      // Update local state
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, ...deliveredData } : order
+      ));
+      
+      // Track current status for this order
+      setOrderCurrentStatus(prev => ({
+        ...prev,
+        [orderId]: 'delivered'
+      }));
+    } catch (error) {
+      console.error('Error delivering order in Firestore:', error);
+      alert('Error delivering order. Please try again.');
+    }
+  };
+
+  const completeBilling = async (orderId) => {
+    if (confirm('Are you sure you have completed this billing on pikonik?')) {
+      try {
+        // Mark as deleted in Firestore instead of actually deleting
+        const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
+        await window.Firebase.setDoc(window.Firebase.doc(ordersRef, orderId), {
+          deleted: true,
+          billingCompletedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+        console.log('Order billing completed in Firestore:', orderId);
+        
+        // Remove from local state
+        setOrders(orders.filter(order => order.id !== orderId));
+      } catch (error) {
+        console.error('Error completing billing in Firestore:', error);
+        alert('Error completing billing. Please try again.');
+      }
+    }
+  };
+
+  const deleteOrder = async (orderId) => {
     if (confirm('Are you sure you want to cancel this order?')) {
-      setOrders(orders.filter(order => order.id !== orderId));
+      try {
+        // Mark as deleted in Firestore instead of actually deleting
+        const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
+        await window.Firebase.setDoc(window.Firebase.doc(ordersRef, orderId), {
+          deleted: true,
+          cancelledAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+        console.log('Order cancelled in Firestore:', orderId);
+        
+        // Remove from local state
+        setOrders(orders.filter(order => order.id !== orderId));
+      } catch (error) {
+        console.error('Error cancelling order in Firestore:', error);
+        alert('Error cancelling order. Please try again.');
+      }
     }
   };
 
