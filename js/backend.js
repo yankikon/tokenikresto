@@ -776,10 +776,7 @@ function QSRBackend() {
               {/* Pikonik Logo */}
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
-                  </svg>
+                  <span className="text-white text-xl font-bold">P</span>
                 </div>
                 <div className="text-right">
                   <h3 className="text-sm font-bold text-gray-800">Pikonik™</h3>

@@ -183,10 +183,7 @@ function QSRTVDisplay() {
         <div></div>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M20 20 L20 80 M20 20 L60 20 L60 40 L40 40 L40 60 L60 60" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
-            </svg>
+            <span className="text-white text-2xl font-bold">P</span>
           </div>
           <div className="text-right">
             <h2 className="text-lg font-bold text-gray-800">Pikonik™</h2>
