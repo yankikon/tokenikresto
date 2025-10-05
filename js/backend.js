@@ -768,16 +768,17 @@ function QSRBackend() {
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Manager Dashboard</h1>
-              <p className="text-sm text-gray-500">TOKENIK (RESTAURANT TOKEN APP)</p>
-            </div>
             <div className="flex items-center gap-4">
               {/* Pikonik Logo */}
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1">
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center p-1">
                 <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
               </div>
-              
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Manager Dashboard</h1>
+                <p className="text-sm text-gray-500">TOKENIK (RESTAURANT TOKEN APP)</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 {user.photoURL && (
                   <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full" />

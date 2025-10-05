@@ -177,20 +177,19 @@ function QSRTVDisplay() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-8">
-      {/* Header with Pikonik Logo */}
-      <div className="flex justify-center mb-8">
-        <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center p-2">
+    <div className="min-h-screen bg-white p-8">
+      {/* Header with Logo and Title */}
+      <div className="flex items-center justify-center gap-6 mb-8">
+        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center p-2">
           <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
         </div>
-      </div>
-      
-      <div className="text-center mb-8">
-        <h1 className="text-6xl font-bold text-gray-900 mb-3">
+        <h1 className="text-6xl font-bold text-gray-900">
           {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Cafe/Bar'} Order Status Board
         </h1>
-        
-        {/* Board Type Selector */}
+      </div>
+      
+      {/* Board Type Selector */}
+      <div className="text-center mb-8">
         <div className="flex justify-center gap-4">
           <button
             onClick={() => setBoardType('kitchen')}
