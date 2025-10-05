@@ -183,7 +183,7 @@ function QSRTVDisplay() {
         <div></div>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1">
-            <img src="assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
+            <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
           </div>
           <div className="text-right">
             <h2 className="text-lg font-bold text-gray-800">Pikonik™</h2>
