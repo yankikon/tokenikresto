@@ -196,9 +196,12 @@ function QSRBackend() {
     const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
     
     const unsubscribe = window.Firebase.onSnapshot(menuRef, (snapshot) => {
+      console.log('Menu items snapshot received, size:', snapshot.size);
       const userMenuItems = [];
       snapshot.forEach((doc) => {
-        userMenuItems.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        console.log('Menu item data:', doc.id, data);
+        userMenuItems.push({ id: doc.id, ...data });
       });
       
       console.log('Real-time menu items update:', userMenuItems);
@@ -222,14 +225,20 @@ function QSRBackend() {
       counterKey = 'kitchen';
     }
     
-    setOrderCounters(prev => {
-      const newCounters = { ...prev };
-      newCounters[counterKey] = newCounters[counterKey] + 1;
-      return newCounters;
-    });
+    // Ensure orderCounters has default values
+    const currentCounters = {
+      kitchen: orderCounters.kitchen || 0,
+      bar: orderCounters.bar || 0
+    };
     
-    const counter = orderCounters[counterKey] + 1;
-    const paddedNumber = counter.toString().padStart(4, '0');
+    const newCounterValue = currentCounters[counterKey] + 1;
+    
+    setOrderCounters(prev => ({
+      ...prev,
+      [counterKey]: newCounterValue
+    }));
+    
+    const paddedNumber = newCounterValue.toString().padStart(4, '0');
     
     if (queue === 'Kitchen' || queue === 'Both') {
       return `K-${paddedNumber}`;
@@ -426,9 +435,29 @@ function QSRBackend() {
     
     // Save to Firestore
     try {
-      console.log('Attempting to save order to Firestore:', newOrder);
+      console.log('=== DEBUGGING ORDER DATA ===');
+      console.log('Raw newOrder object:', JSON.stringify(newOrder, null, 2));
       console.log('User ID:', user.uid);
       console.log('Firebase instances:', { Firebase: !!window.Firebase, db: !!db });
+      
+      // Deep clean the order object to remove any undefined values
+      const cleanedOrder = JSON.parse(JSON.stringify(newOrder, (key, value) => {
+        if (value === undefined) {
+          console.warn(`Found undefined value for key: ${key}`);
+          return null;
+        }
+        return value;
+      }));
+      
+      // Remove null values as well
+      Object.keys(cleanedOrder).forEach(key => {
+        if (cleanedOrder[key] === null || cleanedOrder[key] === undefined) {
+          console.warn(`Removing null/undefined value for key: ${key}`);
+          delete cleanedOrder[key];
+        }
+      });
+      
+      console.log('Cleaned order object:', JSON.stringify(cleanedOrder, null, 2));
       
       const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
       const orderDoc = window.Firebase.doc(ordersRef, orderId);
@@ -436,7 +465,7 @@ function QSRBackend() {
       console.log('Orders reference:', ordersRef);
       console.log('Order document reference:', orderDoc);
       
-      await window.Firebase.setDoc(orderDoc, newOrder);
+      await window.Firebase.setDoc(orderDoc, cleanedOrder);
       console.log('Order saved successfully to Firestore with ID:', orderId);
       
       // Update local state
