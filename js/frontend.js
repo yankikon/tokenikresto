@@ -179,16 +179,9 @@ function QSRTVDisplay() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-8">
       {/* Header with Pikonik Logo */}
-      <div className="flex justify-between items-center mb-8">
-        <div></div>
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1">
-            <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
-          </div>
-          <div className="text-right">
-            <h2 className="text-lg font-bold text-gray-800">Pikonik™</h2>
-            <p className="text-xs text-gray-600">Powered by Tokenik</p>
-          </div>
+      <div className="flex justify-center mb-8">
+        <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center p-2">
+          <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
         </div>
       </div>
       

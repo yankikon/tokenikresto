@@ -774,14 +774,8 @@ function QSRBackend() {
             </div>
             <div className="flex items-center gap-4">
               {/* Pikonik Logo */}
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1">
-                  <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
-                </div>
-                <div className="text-right">
-                  <h3 className="text-sm font-bold text-gray-800">Pikonik™</h3>
-                  <p className="text-xs text-gray-600">Powered by Tokenik</p>
-                </div>
+              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1">
+                <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
               </div>
               
               <div className="flex items-center gap-2">
@@ -796,7 +790,7 @@ function QSRBackend() {
               >
                 Sign Out
               </button>
-            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">← Back to Home</a>
+              <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">← Back to Home</a>
             </div>
           </div>
         </div>
