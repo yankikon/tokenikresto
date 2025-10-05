@@ -561,7 +561,7 @@ function QSRBackend() {
   const handleSignOut = async () => {
     try {
       await window.Firebase.signOut(auth);
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     } catch (error) {
       console.error('Error signing out:', error);
     }
