@@ -343,16 +343,33 @@ function QSRBackend() {
   };
 
   const updateCart = (itemId, change) => {
+    console.log('updateCart called:', { itemId, change, menuItemsCount: menuItems.length });
+    console.log('Menu items available:', menuItems);
+    
+    // Check if the item exists in menu items (using string ID)
+    const menuItem = menuItems.find(m => m.id === itemId);
+    console.log('Menu item found for ID', itemId, ':', menuItem);
+    
+    if (!menuItem && change > 0) {
+      console.error('Menu item not found for ID:', itemId);
+      alert('Menu item not found. Please refresh the page and try again.');
+      return;
+    }
+    
     setCart(prev => {
       const newCart = { ...prev };
       const currentQty = newCart[itemId] || 0;
       const newQty = currentQty + change;
+      
+      console.log('Cart update:', { itemId, currentQty, change, newQty });
       
       if (newQty <= 0) {
         delete newCart[itemId];
       } else {
         newCart[itemId] = newQty;
       }
+      
+      console.log('New cart state:', newCart);
       return newCart;
     });
   };
@@ -365,8 +382,8 @@ function QSRBackend() {
     
     const orderItems = Object.entries(cart)
       .map(([itemId, qty]) => {
-        const item = menuItems.find(m => m.id === parseInt(itemId));
-        console.log(`Looking for item ID ${itemId} (parsed: ${parseInt(itemId)}), found:`, item);
+        const item = menuItems.find(m => m.id === itemId);
+        console.log(`Looking for item ID ${itemId}, found:`, item);
         return item ? { ...item, quantity: qty } : null;
       })
       .filter(item => item !== null); // Remove any null items
@@ -647,7 +664,7 @@ function QSRBackend() {
     
     const orderItems = Object.entries(cart)
       .map(([itemId, qty]) => {
-        const item = menuItems.find(m => m.id === parseInt(itemId));
+        const item = menuItems.find(m => m.id === itemId);
         return item ? { ...item, quantity: qty } : null;
       })
       .filter(item => item !== null); // Remove any null items
@@ -682,7 +699,7 @@ function QSRBackend() {
 
   const getTotalPrice = () => {
     return Object.entries(cart).reduce((sum, [itemId, qty]) => {
-      const item = menuItems.find(m => m.id === parseInt(itemId));
+      const item = menuItems.find(m => m.id === itemId);
       return sum + (item ? item.price * qty : 0);
     }, 0);
   };
@@ -1294,13 +1311,19 @@ function QSRBackend() {
                 
                 <div className="space-y-2 mb-4">
                   {Object.entries(cart).map(([itemId, qty]) => {
-                    const item = menuItems.find(m => m.id === parseInt(itemId));
+                    const item = menuItems.find(m => m.id === itemId);
+                    console.log('Cart summary - looking for item ID:', itemId, 'found:', item);
                     return item ? (
                       <div key={itemId} className="flex justify-between text-gray-700 text-lg">
                         <span>{item.name} × {qty}</span>
                         <span className="font-medium">₹{item.price * qty}</span>
                       </div>
-                    ) : null;
+                    ) : (
+                      <div key={itemId} className="flex justify-between text-red-500 text-lg">
+                        <span>Item not found (ID: {itemId})</span>
+                        <span>× {qty}</span>
+                      </div>
+                    );
                   })}
                 </div>
                 
