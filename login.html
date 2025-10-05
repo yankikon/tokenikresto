@@ -54,8 +54,8 @@
                     }, { merge: true });
                 }
                 
-                // Redirect to dashboard
-                window.location.href = 'dashboard.html';
+                // Redirect to index (which will show dashboard)
+                window.location.href = 'index.html';
             } catch (error) {
                 console.error('Error signing in:', error);
                 document.getElementById('error-message').textContent = error.message;
@@ -66,8 +66,8 @@
         // Listen for auth state changes
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in, redirect to dashboard
-                window.location.href = 'dashboard.html';
+                // User is signed in, redirect to index (which will show dashboard)
+                window.location.href = 'index.html';
             }
         });
 

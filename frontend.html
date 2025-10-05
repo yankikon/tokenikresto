@@ -48,6 +48,9 @@
         window.firebaseAuth = auth;
         window.firebaseDb = db;
 
+        // Set a flag to indicate Firebase is ready
+        window.firebaseReady = true;
+        
         // Check authentication state
         onAuthStateChanged(auth, (user) => {
             if (!user) {
@@ -58,7 +61,18 @@
     </script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+            <div style="width: 50px; height: 50px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 20px; color: #666;">Loading Tokenik TV Display...</p>
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    </div>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>

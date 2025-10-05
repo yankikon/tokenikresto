@@ -8,23 +8,32 @@ function QSRTVDisplay() {
 
   // Authentication effect
   useEffect(() => {
-    if (!window.Firebase || !window.firebaseAuth) {
-      console.error('Firebase not loaded yet');
-      return;
-    }
-
-    const unsubscribe = window.Firebase.onAuthStateChanged(window.firebaseAuth, async (user) => {
-      if (user) {
-        setUser(user);
-        await loadUserOrders(user.uid);
-      } else {
-        setUser(null);
-        window.location.href = 'login.html';
+    const initializeAuth = () => {
+      if (!window.Firebase || !window.firebaseAuth || !window.firebaseReady) {
+        console.log('Waiting for Firebase to load...');
+        setTimeout(initializeAuth, 100);
+        return;
       }
-      setLoading(false);
-    });
 
-    return () => unsubscribe();
+      console.log('Firebase loaded, initializing auth...');
+      const unsubscribe = window.Firebase.onAuthStateChanged(window.firebaseAuth, async (user) => {
+        if (user) {
+          console.log('User authenticated:', user.email);
+          setUser(user);
+          await loadUserOrders(user.uid);
+        } else {
+          console.log('No user authenticated, redirecting to login');
+          setUser(null);
+          window.location.href = 'login.html';
+        }
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    };
+
+    const cleanup = initializeAuth();
+    return cleanup;
   }, []);
 
   // Load user-specific orders from Firestore
@@ -35,12 +44,15 @@ function QSRTVDisplay() {
         return;
       }
       
+      console.log('Loading orders for user:', userId);
       const ordersRef = window.Firebase.collection(window.firebaseDb, 'users', userId, 'orders');
       const ordersSnapshot = await window.Firebase.getDocs(ordersRef);
       const userOrders = [];
       
+      console.log('Orders snapshot size:', ordersSnapshot.size);
       ordersSnapshot.forEach((doc) => {
         const orderData = doc.data();
+        console.log('Order data:', orderData);
         if (!orderData.deleted) {
           userOrders.push({ id: doc.id, ...orderData });
         }
@@ -48,6 +60,7 @@ function QSRTVDisplay() {
       
       // Sort by createdAt descending
       userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      console.log('Loaded orders:', userOrders);
       setOrders(userOrders);
     } catch (error) {
       console.error('Error loading user orders:', error);
@@ -343,13 +356,20 @@ function QSRTVDisplay() {
 // Use React 18 createRoot instead of ReactDOM.render
 // Wait for Firebase to load before rendering
 const renderApp = () => {
-  if (window.Firebase && window.firebaseAuth) {
+  if (window.Firebase && window.firebaseAuth && window.firebaseReady) {
+    console.log('Firebase ready, rendering React app...');
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<QSRTVDisplay />);
   } else {
+    console.log('Waiting for Firebase to be ready...');
     // Retry after a short delay
     setTimeout(renderApp, 100);
   }
 };
 
-renderApp();
+// Start rendering when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
+} else {
+  renderApp();
+}
