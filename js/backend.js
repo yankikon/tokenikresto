@@ -190,28 +190,44 @@ function QSRBackend() {
 
   // Real-time listener for menu items
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user, skipping menu items listener setup');
+      return;
+    }
     
-    console.log('Setting up real-time listener for menu items, user:', user.uid);
+    console.log('=== SETTING UP MENU ITEMS LISTENER ===');
+    console.log('User:', user.uid);
+    console.log('Firebase instances:', { Firebase: !!window.Firebase, db: !!db });
+    
     const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
+    console.log('Menu reference created:', menuRef);
     
     const unsubscribe = window.Firebase.onSnapshot(menuRef, (snapshot) => {
-      console.log('Menu items snapshot received, size:', snapshot.size);
+      console.log('=== MENU ITEMS SNAPSHOT RECEIVED ===');
+      console.log('Snapshot size:', snapshot.size);
+      console.log('Snapshot empty:', snapshot.empty);
+      
       const userMenuItems = [];
       snapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('Menu item data:', doc.id, data);
+        console.log('Menu item found:', { id: doc.id, data });
         userMenuItems.push({ id: doc.id, ...data });
       });
       
-      console.log('Real-time menu items update:', userMenuItems);
+      console.log('=== FINAL MENU ITEMS ===');
+      console.log('Total menu items loaded:', userMenuItems.length);
+      console.log('Menu items array:', userMenuItems);
+      
       setMenuItems(userMenuItems);
     }, (error) => {
-      console.error('Error in menu items listener:', error);
+      console.error('=== ERROR IN MENU ITEMS LISTENER ===');
+      console.error('Error details:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
     });
 
     return () => {
-      console.log('Cleaning up menu items listener');
+      console.log('=== CLEANING UP MENU ITEMS LISTENER ===');
       unsubscribe();
     };
   }, [user]);
@@ -1239,14 +1255,46 @@ function QSRBackend() {
               </div>
 
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  {takeOrderTab === 'kitchen' ? 'Kitchen Items' : 'Bar Items'}
-                </h2>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {takeOrderTab === 'kitchen' ? 'Kitchen Items' : 'Bar Items'}
+                  </h2>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        console.log('=== MANUAL MENU ITEMS DEBUG ===');
+                        console.log('Current menu items:', menuItems);
+                        console.log('Menu items length:', menuItems.length);
+                        console.log('User:', user);
+                      }}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
+                    >
+                      Debug Menu
+                    </button>
+                    {menuItems.length === 0 && (
+                      <button
+                        onClick={addSampleMenuItems}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Add Sample Items
+                      </button>
+                    )}
+                  </div>
+                </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {menuItems
-                    .filter(item => item.category === (takeOrderTab === 'kitchen' ? 'Kitchen' : 'Bar'))
-                    .map(item => (
+                  {(() => {
+                    console.log('=== TAKE ORDER MENU ITEMS DEBUG ===');
+                    console.log('All menu items:', menuItems);
+                    console.log('Current takeOrderTab:', takeOrderTab);
+                    console.log('Filtering for category:', takeOrderTab === 'kitchen' ? 'Kitchen' : 'Bar');
+                    
+                    const filteredItems = menuItems.filter(item => item.category === (takeOrderTab === 'kitchen' ? 'Kitchen' : 'Bar'));
+                    console.log('Filtered menu items:', filteredItems);
+                    
+                    return filteredItems.map(item => {
+                      console.log('Rendering menu item:', item);
+                      return (
                   <div 
                     key={item.id} 
                     className="border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-all cursor-pointer"
@@ -1285,7 +1333,9 @@ function QSRBackend() {
                       </button>
                     </div>
                   </div>
-                  ))}
+                      );
+                    });
+                  })()}
                 </div>
                 
                 {menuItems.filter(item => item.category === (takeOrderTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
