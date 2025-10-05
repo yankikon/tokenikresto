@@ -240,7 +240,9 @@ function QSRTVDisplay() {
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   {order.tableNumber && (
                     <div className="text-xs font-medium text-blue-600">
-                      🏷️ {order.tableNumber}
+                      {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                       order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                       `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
                   <div className="text-yellow-600 text-xl">⏰</div>
@@ -288,7 +290,9 @@ function QSRTVDisplay() {
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   {order.tableNumber && (
                     <div className="text-xs font-medium text-blue-600">
-                      🏷️ {order.tableNumber}
+                      {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                       order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                       `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
                   <div className="text-blue-600 text-xl">👨‍🍳</div>
@@ -336,7 +340,9 @@ function QSRTVDisplay() {
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   {order.tableNumber && (
                     <div className="text-xs font-medium text-blue-600">
-                      🏷️ {order.tableNumber}
+                      {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                       order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                       `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
                   <div className="text-green-600 text-xl">✅</div>
@@ -384,7 +390,9 @@ function QSRTVDisplay() {
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                   {order.tableNumber && (
                     <div className="text-xs font-medium text-blue-600">
-                      🏷️ {order.tableNumber}
+                      {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                       order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                       `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
                   <div className="text-purple-600 text-xl">🎉</div>

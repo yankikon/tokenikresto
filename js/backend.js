@@ -39,6 +39,7 @@ function QSRBackend() {
   const [orderCounters, setOrderCounters] = useState({ kitchen: 0, bar: 0 });
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'pending', 'preparing', 'ready', 'delivered'
   const [selectedTable, setSelectedTable] = useState(''); // Selected table number
+  const [selectedDate, setSelectedDate] = useState(''); // Selected date for filtering completed orders
 
   // Authentication effect
   useEffect(() => {
@@ -943,9 +944,10 @@ function QSRBackend() {
             )}
 
             {orderMainTab === 'completed' && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Summary</h3>
-                <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Summary</h3>
+                  <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => {
                       setOrderSubTab('pending');
@@ -980,6 +982,56 @@ function QSRBackend() {
                   </button>
                 </div>
               </div>
+              
+              {/* Date Filter Section */}
+              <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Filter by Date</h3>
+                <div className="flex gap-4 items-center">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                    >
+                      📅 Today
+                    </button>
+                    <button
+                      onClick={() => {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        setSelectedDate(yesterday.toISOString().split('T')[0]);
+                      }}
+                      className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                    >
+                      Yesterday
+                    </button>
+                    {selectedDate && (
+                      <button
+                        onClick={() => setSelectedDate('')}
+                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                      >
+                        ✕ Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {selectedDate && (
+                  <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <span className="text-blue-800 font-medium">
+                      Showing orders for: {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
             )}
 
             {/* Active Orders Section */}
@@ -1063,7 +1115,9 @@ function QSRBackend() {
                         <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
                         {order.tableNumber && (
                           <div className="text-sm font-medium text-blue-600 mt-1">
-                            🏷️ Table: {order.tableNumber}
+                            {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                             order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                             `🏷️ Table: ${order.tableNumber}`}
                           </div>
                         )}
                       </div>
@@ -1160,7 +1214,15 @@ function QSRBackend() {
                     {(() => {
                       const pendingBillingOrders = orders.filter(order => {
                         if (order.status !== 'delivered') return false;
-                        return order.billingStatus === 'pending_billing' || !order.billingStatus;
+                        if (!(order.billingStatus === 'pending_billing' || !order.billingStatus)) return false;
+                        
+                        // Apply date filter if selected
+                        if (selectedDate) {
+                          const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+                          if (orderDate !== selectedDate) return false;
+                        }
+                        
+                        return true;
                       });
                       
                       return pendingBillingOrders.length === 0 ? (
@@ -1240,7 +1302,15 @@ function QSRBackend() {
                     {(() => {
                       const completedBillingOrders = orders.filter(order => {
                         if (order.status !== 'delivered') return false;
-                        return order.billingStatus === 'billing_completed';
+                        if (order.billingStatus !== 'billing_completed') return false;
+                        
+                        // Apply date filter if selected
+                        if (selectedDate) {
+                          const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+                          if (orderDate !== selectedDate) return false;
+                        }
+                        
+                        return true;
                       });
                       
                       const kitchenOrders = completedBillingOrders.filter(order => order.queue === 'Kitchen' || order.queue === 'Both');
@@ -1284,7 +1354,9 @@ function QSRBackend() {
                                             <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
                                             {order.tableNumber && (
                                               <div className="text-sm font-medium text-blue-600 mt-1">
-                                                🏷️ Table: {order.tableNumber}
+                                                {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                                                 order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                                                 `🏷️ Table: ${order.tableNumber}`}
                                               </div>
                                             )}
                                             {order.deliveredAt && (
@@ -1348,7 +1420,9 @@ function QSRBackend() {
                                             <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
                                             {order.tableNumber && (
                                               <div className="text-sm font-medium text-blue-600 mt-1">
-                                                🏷️ Table: {order.tableNumber}
+                                                {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                                                 order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                                                 `🏷️ Table: ${order.tableNumber}`}
                                               </div>
                                             )}
                                             {order.deliveredAt && (
