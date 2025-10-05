@@ -25,6 +25,14 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Import additional Firebase modules for OAuth
+        import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Initialize Google provider
+        const googleProvider = new GoogleAuthProvider();
+        const db = getFirestore(app);
+
         // Check authentication state
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -55,6 +63,40 @@
             }
         }
 
+        // Sign in with Google function
+        async function signInWithGoogle() {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                // Create user document in Firestore if it doesn't exist
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+                
+                if (!userSnap.exists()) {
+                    await setDoc(userRef, {
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString()
+                    });
+                } else {
+                    // Update last login time
+                    await setDoc(userRef, {
+                        lastLogin: new Date().toISOString()
+                    }, { merge: true });
+                }
+                
+                // Dashboard will be shown automatically by onAuthStateChanged
+            } catch (error) {
+                console.error('Error signing in:', error);
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('error-message').classList.remove('hidden');
+            }
+        }
+
         // Sign out function
         async function signOutUser() {
             try {
@@ -65,7 +107,8 @@
             }
         }
 
-        // Make signOutUser available globally
+        // Make functions available globally
+        window.signInWithGoogle = signInWithGoogle;
         window.signOutUser = signOutUser;
     </script>
 </head>
@@ -84,7 +127,7 @@
                 <p class="text-gray-500 mb-8">Restaurant Token Management</p>
                 
                 <!-- Sign In Button -->
-                <a href="login.html" class="block">
+                <button onclick="signInWithGoogle()" class="w-full">
                     <div class="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-200 flex items-center justify-center gap-3">
                         <svg class="w-6 h-6" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -94,7 +137,12 @@
                         </svg>
                         Sign in with Google
                     </div>
-                </a>
+                </button>
+                
+                <!-- Error Message -->
+                <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4 text-sm">
+                    Error signing in. Please try again.
+                </div>
                 
                 <!-- Features -->
                 <div class="mt-8 text-left">
@@ -173,7 +221,7 @@
                             </svg>
                         </div>
                         <h2 class="text-2xl font-bold text-black mb-3">TV Display</h2>
-                        <p class="text-gray-600 mb-6">Kitchen/Customer-facing order status board. Display on TV, tablet, or monitor</p>
+                        <p class="text-gray-600 mb-6">Kitchen/Customer TV, tablet, or monitor display</p>
                         <div class="bg-black text-white px-6 py-3 rounded-lg font-medium inline-block group-hover:bg-gray-800 transition-colors">
                             Open Display
                         </div>
