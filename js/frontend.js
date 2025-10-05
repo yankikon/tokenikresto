@@ -20,11 +20,11 @@ function QSRTVDisplay() {
         if (user) {
           console.log('User authenticated:', user.email);
           setUser(user);
-          await loadUserOrders(user.uid);
+          // Real-time listener will handle loading orders
         } else {
-          console.log('No user authenticated, redirecting to login');
+          console.log('No user authenticated, redirecting to index');
           setUser(null);
-          window.location.href = 'login.html';
+          window.location.href = 'index.html';
         }
         setLoading(false);
       });
@@ -69,16 +69,24 @@ function QSRTVDisplay() {
   };
 
   useEffect(() => {
-    if (!user || !window.Firebase || !window.firebaseDb) return;
+    if (!user || !window.Firebase || !window.firebaseDb) {
+      console.log('Real-time listener setup skipped:', { user: !!user, Firebase: !!window.Firebase, firebaseDb: !!window.firebaseDb });
+      return;
+    }
     
     console.log('Setting up real-time listener for user:', user.uid);
+    console.log('Firebase instances:', { Firebase: !!window.Firebase, firebaseDb: !!window.firebaseDb, onSnapshot: !!window.Firebase.onSnapshot });
+    
     const ordersRef = window.Firebase.collection(window.firebaseDb, 'users', user.uid, 'orders');
+    console.log('Orders reference created:', ordersRef);
     
     // Set up real-time listener
     const unsubscribe = window.Firebase.onSnapshot(ordersRef, (snapshot) => {
+      console.log('Real-time snapshot received, size:', snapshot.size);
       const userOrders = [];
       snapshot.forEach((doc) => {
         const orderData = doc.data();
+        console.log('Processing order:', doc.id, orderData);
         if (!orderData.deleted) {
           userOrders.push({ id: doc.id, ...orderData });
         }
@@ -86,7 +94,7 @@ function QSRTVDisplay() {
       
       // Sort by createdAt descending
       userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-      console.log('Real-time orders update:', userOrders);
+      console.log('Real-time orders update - final orders:', userOrders);
       setOrders(userOrders);
     }, (error) => {
       console.error('Error in real-time listener:', error);
@@ -135,6 +143,27 @@ function QSRTVDisplay() {
     });
   };
 
+  // Debug function to test connection
+  const testConnection = async () => {
+    console.log('Testing connection...');
+    console.log('User:', user);
+    console.log('Firebase instances:', { Firebase: !!window.Firebase, firebaseDb: !!window.firebaseDb });
+    console.log('Current orders:', orders);
+    
+    if (user && window.Firebase && window.firebaseDb) {
+      try {
+        const ordersRef = window.Firebase.collection(window.firebaseDb, 'users', user.uid, 'orders');
+        const snapshot = await window.Firebase.getDocs(ordersRef);
+        console.log('Direct Firestore query result:', snapshot.size, 'orders');
+        snapshot.forEach(doc => {
+          console.log('Order from direct query:', doc.id, doc.data());
+        });
+      } catch (error) {
+        console.error('Error in direct query:', error);
+      }
+    }
+  };
+
   // Show loading screen while authenticating
   if (loading) {
     return (
@@ -155,9 +184,17 @@ function QSRTVDisplay() {
         </h1>
         <p className="text-2xl text-gray-600 mb-6">Please wait for your token to be called</p>
         {user && (
-          <p className="text-sm text-gray-500 mb-4">
-            Displaying orders for: {user.displayName || user.email}
-          </p>
+          <div className="mb-4">
+            <p className="text-sm text-gray-500 mb-2">
+              Displaying orders for: {user.displayName || user.email} | Orders: {orders.length}
+            </p>
+            <button
+              onClick={testConnection}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              Test Connection
+            </button>
+          </div>
         )}
         
         {/* Board Type Selector */}

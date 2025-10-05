@@ -394,11 +394,17 @@ function QSRBackend() {
     // Save to Firestore
     try {
       console.log('Attempting to save order to Firestore:', newOrder);
+      console.log('User ID:', user.uid);
+      console.log('Firebase instances:', { Firebase: !!window.Firebase, db: !!db });
+      
       const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
       const orderDoc = window.Firebase.doc(ordersRef, orderId);
       
+      console.log('Orders reference:', ordersRef);
+      console.log('Order document reference:', orderDoc);
+      
       await window.Firebase.setDoc(orderDoc, newOrder);
-      console.log('Order saved successfully to Firestore');
+      console.log('Order saved successfully to Firestore with ID:', orderId);
       
       // Update local state
       setOrders([newOrder, ...orders]);
