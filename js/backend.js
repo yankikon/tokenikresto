@@ -351,10 +351,25 @@ function QSRBackend() {
   const placeOrder = async () => {
     if (Object.keys(cart).length === 0 || !user) return;
     
-    const orderItems = Object.entries(cart).map(([itemId, qty]) => {
-      const item = menuItems.find(m => m.id === parseInt(itemId));
-      return { ...item, quantity: qty };
-    });
+    console.log('Cart items:', Object.entries(cart));
+    console.log('Available menu items:', menuItems);
+    
+    const orderItems = Object.entries(cart)
+      .map(([itemId, qty]) => {
+        const item = menuItems.find(m => m.id === parseInt(itemId));
+        console.log(`Looking for item ID ${itemId} (parsed: ${parseInt(itemId)}), found:`, item);
+        return item ? { ...item, quantity: qty } : null;
+      })
+      .filter(item => item !== null); // Remove any null items
+    
+    console.log('Final order items:', orderItems);
+    
+    // Check if we have valid items
+    if (orderItems.length === 0) {
+      console.error('No valid items found in cart');
+      alert('No valid items found in cart. Please check that menu items are loaded and try again.');
+      return;
+    }
 
     // Determine queue based on item categories
     const hasBarItems = orderItems.some(item => item.category === 'Bar');
@@ -370,13 +385,24 @@ function QSRBackend() {
     const orderId = Date.now().toString();
     
     // Clean order items to ensure they're Firestore-compatible
-    const cleanOrderItems = orderItems.map(item => ({
-      id: item.id,
-      name: item.name,
-      price: typeof item.price === 'number' ? item.price : parseFloat(item.price),
-      category: item.category,
-      quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity)
-    }));
+    const cleanOrderItems = orderItems.map(item => {
+      const cleanItem = {
+        id: item.id || null,
+        name: item.name || '',
+        price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
+        category: item.category || 'Kitchen',
+        quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
+      };
+      
+      // Remove any undefined values
+      Object.keys(cleanItem).forEach(key => {
+        if (cleanItem[key] === undefined) {
+          delete cleanItem[key];
+        }
+      });
+      
+      return cleanItem;
+    });
     
     const newOrder = {
       id: orderId,
@@ -390,6 +416,13 @@ function QSRBackend() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+    
+    // Remove any undefined values from the main order object
+    Object.keys(newOrder).forEach(key => {
+      if (newOrder[key] === undefined) {
+        delete newOrder[key];
+      }
+    });
     
     // Save to Firestore
     try {
@@ -583,10 +616,19 @@ function QSRBackend() {
   const updateOrder = () => {
     if (Object.keys(cart).length === 0 || !editingOrder) return;
     
-    const orderItems = Object.entries(cart).map(([itemId, qty]) => {
-      const item = menuItems.find(m => m.id === parseInt(itemId));
-      return { ...item, quantity: qty };
-    });
+    const orderItems = Object.entries(cart)
+      .map(([itemId, qty]) => {
+        const item = menuItems.find(m => m.id === parseInt(itemId));
+        return item ? { ...item, quantity: qty } : null;
+      })
+      .filter(item => item !== null); // Remove any null items
+    
+    // Check if we have valid items
+    if (orderItems.length === 0) {
+      console.error('No valid items found in cart for update');
+      alert('No valid items found in cart. Please try again.');
+      return;
+    }
 
     setOrders(orders.map(order => 
       order.id === editingOrder 
