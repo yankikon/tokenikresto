@@ -775,8 +775,8 @@ function QSRBackend() {
             <div className="flex items-center gap-4">
               {/* Pikonik Logo */}
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">P</span>
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1">
+                  <img src="assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
                 </div>
                 <div className="text-right">
                   <h3 className="text-sm font-bold text-gray-800">Pikonik™</h3>
