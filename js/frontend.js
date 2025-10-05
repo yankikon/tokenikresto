@@ -180,7 +180,7 @@ function QSRTVDisplay() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 p-8">
       <div className="text-center mb-8">
         <h1 className="text-6xl font-bold text-gray-900 mb-3">
-          {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Bar'} Order Status Board
+          {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Cafe/Bar'} Order Status Board
         </h1>
         <p className="text-2xl text-gray-600 mb-6">Please wait for your token to be called</p>
         {user && (
@@ -217,7 +217,7 @@ function QSRTVDisplay() {
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
             }`}
           >
-            🍹 Bar Board
+            🍹 Cafe/Bar Board
           </button>
         </div>
       </div>
