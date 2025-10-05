@@ -626,17 +626,21 @@ function QSRBackend() {
   const completeBilling = async (orderId) => {
     if (confirm('Are you sure you have completed this billing on pikonik?')) {
       try {
-        // Mark as deleted in Firestore instead of actually deleting
+        // Update status to billing_completed instead of deleting
         const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
         await window.Firebase.setDoc(window.Firebase.doc(ordersRef, orderId), {
-          deleted: true,
+          billingStatus: 'billing_completed',
           billingCompletedAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }, { merge: true });
         console.log('Order billing completed in Firestore:', orderId);
         
-        // Remove from local state
-        setOrders(orders.filter(order => order.id !== orderId));
+        // Update local state
+        setOrders(orders.map(order => 
+          order.id === orderId 
+            ? { ...order, billingStatus: 'billing_completed', billingCompletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+            : order
+        ));
       } catch (error) {
         console.error('Error completing billing in Firestore:', error);
         alert('Error completing billing. Please try again.');
@@ -1135,10 +1139,6 @@ function QSRBackend() {
                 </div>
 
                 <div className="bg-white rounded-b-lg shadow-lg p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                    {orderSubTab === 'kitchen' ? 'Completed Kitchen Orders' : 'Completed Bar Orders'}
-                  </h2>
-                  
                   {(() => {
                     const completedOrders = orders.filter(order => {
                       if (order.status !== 'delivered') return false;
@@ -1150,66 +1150,163 @@ function QSRBackend() {
                       }
                     });
                     
-                    return completedOrders.length === 0 ? (
-                      <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">No completed {orderSubTab} orders yet</p>
-                        <p className="text-gray-400 text-sm">Delivered orders will appear here</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {completedOrders.map(order => (
-                          <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
-                            order.queue === 'Kitchen' || order.queue === 'Both' 
-                              ? 'bg-pink-50 border-pink-200' 
-                              : 'bg-blue-50 border-blue-200'
-                          }`}>
-                            <div className="flex items-start justify-between mb-4">
+                    const pendingBillingOrders = completedOrders.filter(order => order.billingStatus === 'pending_billing' || !order.billingStatus);
+                    const completedBillingOrders = completedOrders.filter(order => order.billingStatus === 'billing_completed');
+                    
+                    const totalAmount = completedOrders.reduce((sum, order) => {
+                      return sum + order.items.reduce((orderSum, item) => orderSum + (item.price * item.quantity), 0);
+                    }, 0);
+                    
+                    return (
+                      <div>
+                        {/* Total Amount Display */}
+                        <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 mb-6">
+                          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                            {orderSubTab === 'kitchen' ? 'Completed Kitchen Orders' : 'Completed Bar Orders'}
+                          </h2>
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                            <span className="text-2xl font-bold text-green-600">₹{totalAmount}</span>
+                          </div>
+                        </div>
+                        
+                        {completedOrders.length === 0 ? (
+                          <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">No completed {orderSubTab} orders yet</p>
+                            <p className="text-gray-400 text-sm">Delivered orders will appear here</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-6">
+                            {/* Pending Billing Orders */}
+                            {pendingBillingOrders.length > 0 && (
                               <div>
-                                <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
-                                {order.deliveredAt && (
-                                  <div className="text-xs text-gray-400">
-                                    Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
-                                  </div>
-                                )}
-                                {order.queue && (
-                                  <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
-                                    order.queue === 'Bar' ? 'bg-blue-100 text-blue-800' :
-                                    order.queue === 'Kitchen' ? 'bg-green-100 text-green-800' :
-                                    'bg-purple-100 text-purple-800'
-                                  }`}>
-                                    {order.queue} Queue
-                                  </div>
-                                )}
+                                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                                  Pending Billing ({pendingBillingOrders.length})
+                                </h3>
+                                <div className="space-y-3">
+                                  {pendingBillingOrders.map(order => (
+                                    <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
+                                      order.queue === 'Kitchen' || order.queue === 'Both' 
+                                        ? 'bg-pink-50 border-pink-200' 
+                                        : 'bg-blue-50 border-blue-200'
+                                    }`}>
+                                      <div className="flex items-start justify-between mb-4">
+                                        <div>
+                                          <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                                          <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                          {order.deliveredAt && (
+                                            <div className="text-xs text-gray-400">
+                                              Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
+                                            </div>
+                                          )}
+                                          {order.queue && (
+                                            <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
+                                              order.queue === 'Bar' ? 'bg-blue-100 text-blue-800' :
+                                              order.queue === 'Kitchen' ? 'bg-green-100 text-green-800' :
+                                              'bg-purple-100 text-purple-800'
+                                            }`}>
+                                              {order.queue} Queue
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="bg-white rounded-lg p-4 mb-4">
+                                        {order.items.map((item, idx) => (
+                                          <div key={idx} className="flex justify-between text-lg py-2">
+                                            <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                                            <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                          </div>
+                                        ))}
+                                        <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
+                                          <span>Total</span>
+                                          <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                        <p className="text-gray-900 font-medium text-center mb-3">
+                                          Order delivered - Ready for billing completion
+                                        </p>
+                                        <button
+                                          onClick={() => completeBilling(order.id)}
+                                          className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                        >
+                                          Billing Completed
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                          </div>
-                          
-                          <div className="bg-white rounded-lg p-4 mb-4">
-                            {order.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between text-lg py-2">
-                                <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                            )}
+                            
+                            {/* Completed Billing Orders */}
+                            {completedBillingOrders.length > 0 && (
+                              <div>
+                                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                                  Completed Billing ({completedBillingOrders.length})
+                                </h3>
+                                <div className="space-y-3">
+                                  {completedBillingOrders.map(order => (
+                                    <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
+                                      order.queue === 'Kitchen' || order.queue === 'Both' 
+                                        ? 'bg-pink-50 border-pink-200' 
+                                        : 'bg-blue-50 border-blue-200'
+                                    }`}>
+                                      <div className="flex items-start justify-between mb-4">
+                                        <div>
+                                          <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                                          <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                          {order.deliveredAt && (
+                                            <div className="text-xs text-gray-400">
+                                              Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
+                                            </div>
+                                          )}
+                                          {order.billingCompletedAt && (
+                                            <div className="text-xs text-gray-400">
+                                              Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
+                                            </div>
+                                          )}
+                                          {order.queue && (
+                                            <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
+                                              order.queue === 'Bar' ? 'bg-blue-100 text-blue-800' :
+                                              order.queue === 'Kitchen' ? 'bg-green-100 text-green-800' :
+                                              'bg-purple-100 text-purple-800'
+                                            }`}>
+                                              {order.queue} Queue
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="bg-white rounded-lg p-4 mb-4">
+                                        {order.items.map((item, idx) => (
+                                          <div key={idx} className="flex justify-between text-lg py-2">
+                                            <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                                            <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                          </div>
+                                        ))}
+                                        <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
+                                          <span>Total</span>
+                                          <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                        <p className="text-green-800 font-medium text-center">
+                                          ✅ Billing Completed
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            ))}
-                            <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                              <span>Total</span>
-                              <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
-                            </div>
+                            )}
                           </div>
-                          
-                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                            <p className="text-gray-900 font-medium text-center mb-3">
-                              Order delivered - Ready for billing completion
-                            </p>
-                            <button
-                              onClick={() => completeBilling(order.id)}
-                              className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                            >
-                              Billing Completed
-                            </button>
-                          </div>
-                          </div>
-                        ))}
+                        )}
                       </div>
                     );
                   })()}
@@ -1259,27 +1356,14 @@ function QSRBackend() {
                   <h2 className="text-2xl font-bold text-gray-900">
                     {takeOrderTab === 'kitchen' ? 'Kitchen Items' : 'Bar Items'}
                   </h2>
-                  <div className="flex gap-2">
+                  {menuItems.length === 0 && (
                     <button
-                      onClick={() => {
-                        console.log('=== MANUAL MENU ITEMS DEBUG ===');
-                        console.log('Current menu items:', menuItems);
-                        console.log('Menu items length:', menuItems.length);
-                        console.log('User:', user);
-                      }}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
+                      onClick={addSampleMenuItems}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
                     >
-                      Debug Menu
+                      Add Sample Items
                     </button>
-                    {menuItems.length === 0 && (
-                      <button
-                        onClick={addSampleMenuItems}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Add Sample Items
-                      </button>
-                    )}
-                  </div>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
