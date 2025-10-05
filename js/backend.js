@@ -28,12 +28,7 @@ function QSRBackend() {
   const [orderSubTab, setOrderSubTab] = useState('kitchen');
   const [takeOrderTab, setTakeOrderTab] = useState('kitchen');
   const [orderMainTab, setOrderMainTab] = useState('active');
-  const [menuItems, setMenuItems] = useState([
-    { id: 1, name: 'Masala Dosa', price: 80, category: 'Kitchen' },
-    { id: 2, name: 'Idli Sambhar', price: 60, category: 'Kitchen' },
-    { id: 3, name: 'Filter Coffee', price: 40, category: 'Bar' },
-    { id: 4, name: 'Vada', price: 50, category: 'Kitchen' }
-  ]);
+  const [menuItems, setMenuItems] = useState([]);
   const [orders, setOrders] = useState([]);
   const [newItem, setNewItem] = useState({ name: '', price: '' , category: '' });
   const [cart, setCart] = useState({});
@@ -63,6 +58,10 @@ function QSRBackend() {
   // Load user data from Firestore
   const loadUserData = async (userId) => {
     try {
+      // Clear localStorage for new user session
+      localStorage.removeItem('qsrOrders');
+      localStorage.removeItem('qsrMenuItems');
+      
       // Load orders
       const ordersRef = window.Firebase.collection(db, 'users', userId, 'orders');
       const ordersQuery = window.Firebase.query(ordersRef, window.Firebase.where('deleted', '!=', true), window.Firebase.orderBy('createdAt', 'desc'));
@@ -84,14 +83,20 @@ function QSRBackend() {
         userMenuItems.push({ id: doc.id, ...doc.data() });
       });
       
-      if (userMenuItems.length > 0) {
-        setMenuItems(userMenuItems);
+      // Always set menu items (even if empty array)
+      setMenuItems(userMenuItems);
+      
+      console.log(`Loaded ${userOrders.length} orders and ${userMenuItems.length} menu items for user ${userId}`);
+      
+      // If user has no menu items, offer to add sample items
+      if (userMenuItems.length === 0) {
+        console.log('New user detected - no menu items found');
       }
     } catch (error) {
       console.error('Error loading user data:', error);
-      // Fallback to localStorage if Firestore fails
-      const savedOrders = JSON.parse(localStorage.getItem('qsrOrders') || '[]');
-      setOrders(savedOrders);
+      // For new users, start with empty arrays
+      setOrders([]);
+      setMenuItems([]);
     }
   };
 
@@ -346,6 +351,45 @@ function QSRBackend() {
       
       // Show user-friendly error message
       alert('Order placed successfully, but there was an issue saving to cloud storage. Your order is saved locally.');
+    }
+  };
+
+  // Add sample menu items for new users
+  const addSampleMenuItems = async () => {
+    if (!user) return;
+    
+    const sampleItems = [
+      { name: 'Masala Dosa', price: 80, category: 'Kitchen' },
+      { name: 'Idli Sambhar', price: 60, category: 'Kitchen' },
+      { name: 'Filter Coffee', price: 40, category: 'Bar' },
+      { name: 'Vada', price: 50, category: 'Kitchen' }
+    ];
+    
+    try {
+      const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
+      const newMenuItems = [];
+      
+      for (const item of sampleItems) {
+        const menuItemId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        const menuItemData = {
+          id: menuItemId,
+          name: item.name,
+          price: item.price,
+          category: item.category,
+          userId: user.uid,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        await window.Firebase.setDoc(window.Firebase.doc(menuRef, menuItemId), menuItemData);
+        newMenuItems.push(menuItemData);
+      }
+      
+      setMenuItems(newMenuItems);
+      alert('Sample menu items added! You can edit or delete them in Menu Management.');
+    } catch (error) {
+      console.error('Error adding sample menu items:', error);
+      alert('Error adding sample menu items. Please try again.');
     }
   };
 
@@ -1028,7 +1072,15 @@ function QSRBackend() {
                 {menuItems.filter(item => item.category === (takeOrderTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <p className="text-lg">No {takeOrderTab} items available</p>
-                    <p className="text-sm">Add items in Menu Management first</p>
+                    <p className="text-sm mb-4">Add items in Menu Management first</p>
+                    {menuItems.length === 0 && (
+                      <button
+                        onClick={addSampleMenuItems}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                      >
+                        Add Sample Menu Items
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -1197,7 +1249,15 @@ function QSRBackend() {
                   {menuItems.filter(item => item.category === (menuTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                       <p className="text-lg">No {menuTab} items yet</p>
-                      <p className="text-sm">Add some items to get started</p>
+                      <p className="text-sm mb-4">Add some items to get started</p>
+                      {menuItems.length === 0 && (
+                        <button
+                          onClick={addSampleMenuItems}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                        >
+                          Add Sample Menu Items
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
