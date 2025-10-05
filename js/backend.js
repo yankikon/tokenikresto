@@ -103,11 +103,28 @@ function QSRBackend() {
       const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
       
       for (const order of ordersToSave) {
+        // Clean the order data to ensure it's Firestore-compatible
         const orderData = {
-          ...order,
+          id: order.id,
+          token: order.token,
+          items: order.items,
+          status: order.status,
+          queue: order.queue,
+          timestamp: order.timestamp,
+          date: order.date,
           userId: user.uid,
-          updatedAt: new Date().toISOString()
+          createdAt: order.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          deliveredAt: order.deliveredAt || null,
+          billingStatus: order.billingStatus || null
         };
+        
+        // Remove any undefined or null values that might cause issues
+        Object.keys(orderData).forEach(key => {
+          if (orderData[key] === undefined) {
+            delete orderData[key];
+          }
+        });
         
         if (order.id) {
           await window.Firebase.setDoc(window.Firebase.doc(ordersRef, order.id), orderData, { merge: true });
@@ -126,11 +143,23 @@ function QSRBackend() {
       const menuRef = window.Firebase.collection(db, 'users', user.uid, 'menu');
       
       for (const item of itemsToSave) {
+        // Clean the menu item data to ensure it's Firestore-compatible
         const itemData = {
-          ...item,
+          id: item.id,
+          name: item.name,
+          price: typeof item.price === 'number' ? item.price : parseFloat(item.price),
+          category: item.category,
           userId: user.uid,
+          createdAt: item.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
+        
+        // Remove any undefined values
+        Object.keys(itemData).forEach(key => {
+          if (itemData[key] === undefined) {
+            delete itemData[key];
+          }
+        });
         
         if (item.id) {
           await window.Firebase.setDoc(window.Firebase.doc(menuRef, item.id), itemData, { merge: true });
@@ -141,19 +170,19 @@ function QSRBackend() {
     }
   };
 
-  // Update orders effect
-  useEffect(() => {
-    if (user && orders.length > 0) {
-      saveOrdersToFirestore(orders);
-    }
-  }, [orders, user]);
+  // Update orders effect - disabled automatic saving to prevent conflicts
+  // useEffect(() => {
+  //   if (user && orders.length > 0) {
+  //     saveOrdersToFirestore(orders);
+  //   }
+  // }, [orders, user]);
 
-  // Update menu items effect
-  useEffect(() => {
-    if (user && menuItems.length > 0) {
-      saveMenuItemsToFirestore(menuItems);
-    }
-  }, [menuItems, user]);
+  // Update menu items effect - disabled automatic saving to prevent conflicts
+  // useEffect(() => {
+  //   if (user && menuItems.length > 0) {
+  //     saveMenuItemsToFirestore(menuItems);
+  //   }
+  // }, [menuItems, user]);
 
   const generateToken = (queue) => {
     let counterKey = 'kitchen';
@@ -188,11 +217,15 @@ function QSRBackend() {
         updateMenuItem();
       } else {
         const category = menuTab === 'kitchen' ? 'Kitchen' : 'Bar';
+        const menuItemId = Date.now().toString();
         const newMenuItem = {
-          id: Date.now(),
-          name: newItem.name,
+          id: menuItemId,
+          name: newItem.name.trim(),
           price: parseFloat(newItem.price),
-          category: category
+          category: category,
+          userId: user ? user.uid : null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
         console.log('Adding menu item:', newMenuItem);
         console.log('Current menuTab:', menuTab);
@@ -267,10 +300,20 @@ function QSRBackend() {
     }
 
     const orderId = Date.now().toString();
+    
+    // Clean order items to ensure they're Firestore-compatible
+    const cleanOrderItems = orderItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: typeof item.price === 'number' ? item.price : parseFloat(item.price),
+      category: item.category,
+      quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity)
+    }));
+    
     const newOrder = {
       id: orderId,
       token: generateToken(queue),
-      items: orderItems,
+      items: cleanOrderItems,
       status: 'pending',
       queue: queue,
       timestamp: new Date().toLocaleTimeString(),
@@ -282,17 +325,27 @@ function QSRBackend() {
     
     // Save to Firestore
     try {
+      console.log('Attempting to save order to Firestore:', newOrder);
       const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
-      await window.Firebase.setDoc(window.Firebase.doc(ordersRef, orderId), newOrder);
+      const orderDoc = window.Firebase.doc(ordersRef, orderId);
+      
+      await window.Firebase.setDoc(orderDoc, newOrder);
+      console.log('Order saved successfully to Firestore');
       
       // Update local state
       setOrders([newOrder, ...orders]);
       setCart({});
     } catch (error) {
       console.error('Error saving order to Firestore:', error);
+      console.error('Error details:', error.message);
+      console.error('Error code:', error.code);
+      
       // Fallback to local state
       setOrders([newOrder, ...orders]);
       setCart({});
+      
+      // Show user-friendly error message
+      alert('Order placed successfully, but there was an issue saving to cloud storage. Your order is saved locally.');
     }
   };
 
