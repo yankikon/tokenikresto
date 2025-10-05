@@ -38,6 +38,7 @@ function QSRBackend() {
   const [orderCurrentStatus, setOrderCurrentStatus] = useState({}); // Track current status for each order
   const [orderCounters, setOrderCounters] = useState({ kitchen: 0, bar: 0 });
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'pending', 'preparing', 'ready', 'delivered'
+  const [selectedTable, setSelectedTable] = useState(''); // Selected table number
 
   // Authentication effect
   useEffect(() => {
@@ -393,6 +394,12 @@ function QSRBackend() {
   const placeOrder = async () => {
     if (Object.keys(cart).length === 0 || !user) return;
     
+    // Check if table number is selected
+    if (!selectedTable) {
+      alert('Please select a table number before placing the order.');
+      return;
+    }
+    
     console.log('Cart items:', Object.entries(cart));
     console.log('Available menu items:', menuItems);
     
@@ -452,6 +459,7 @@ function QSRBackend() {
       items: cleanOrderItems,
       status: 'pending',
       queue: queue,
+      tableNumber: selectedTable,
       timestamp: new Date().toLocaleTimeString(),
       date: new Date().toLocaleDateString(),
       userId: user.uid,
@@ -504,6 +512,7 @@ function QSRBackend() {
       // Update local state
       setOrders([newOrder, ...orders]);
       setCart({});
+      setSelectedTable(''); // Clear selected table
     } catch (error) {
       console.error('Error saving order to Firestore:', error);
       console.error('Error details:', error.message);
@@ -512,6 +521,7 @@ function QSRBackend() {
       // Fallback to local state
       setOrders([newOrder, ...orders]);
       setCart({});
+      setSelectedTable(''); // Clear selected table
       
       // Show user-friendly error message
       alert('Order placed successfully, but there was an issue saving to cloud storage. Your order is saved locally.');
@@ -703,12 +713,14 @@ function QSRBackend() {
     ));
     
     setCart({});
+    setSelectedTable(''); // Clear selected table
     setEditingOrder(null);
     setActiveTab('orders');
   };
 
   const cancelEdit = () => {
     setCart({});
+    setSelectedTable(''); // Clear selected table
     setEditingOrder(null);
     setActiveTab('orders');
   };
@@ -1049,6 +1061,11 @@ function QSRBackend() {
                       <div>
                         <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                         <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                        {order.tableNumber && (
+                          <div className="text-sm font-medium text-blue-600 mt-1">
+                            🏷️ Table: {order.tableNumber}
+                          </div>
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -1163,6 +1180,11 @@ function QSRBackend() {
                                 <div>
                                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                                   <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                  {order.tableNumber && (
+                                    <div className="text-sm font-medium text-blue-600 mt-1">
+                                      🏷️ Table: {order.tableNumber}
+                                    </div>
+                                  )}
                                   {order.deliveredAt && (
                                     <div className="text-xs text-gray-400">
                                       Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
@@ -1260,6 +1282,11 @@ function QSRBackend() {
                                           <div>
                                             <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                                             <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            {order.tableNumber && (
+                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                                🏷️ Table: {order.tableNumber}
+                                              </div>
+                                            )}
                                             {order.deliveredAt && (
                                               <div className="text-xs text-gray-400">
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
@@ -1319,6 +1346,11 @@ function QSRBackend() {
                                           <div>
                                             <div className="text-2xl font-bold text-gray-900">{order.token}</div>
                                             <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            {order.tableNumber && (
+                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                                🏷️ Table: {order.tableNumber}
+                                              </div>
+                                            )}
                                             {order.deliveredAt && (
                                               <div className="text-xs text-gray-400">
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
@@ -1515,6 +1547,57 @@ function QSRBackend() {
                       </div>
                     );
                   })}
+                </div>
+                
+                {/* Table Selection */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <label className="block text-lg font-semibold text-gray-700 mb-3">
+                    🏷️ Select Table Number
+                  </label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(tableNum => (
+                      <button
+                        key={tableNum}
+                        onClick={() => setSelectedTable(tableNum.toString())}
+                        className={`p-3 rounded-lg font-medium transition-all ${
+                          selectedTable === tableNum.toString()
+                            ? 'bg-orange-500 text-white shadow-md'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50 hover:border-orange-300'
+                        }`}
+                      >
+                        {tableNum}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() => setSelectedTable('Take Away')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedTable === 'Take Away'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                      }`}
+                    >
+                      📦 Take Away
+                    </button>
+                    <button
+                      onClick={() => setSelectedTable('Home Delivery')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedTable === 'Home Delivery'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-green-50 hover:border-green-300'
+                      }`}
+                    >
+                      🚚 Home Delivery
+                    </button>
+                  </div>
+                  {selectedTable && (
+                    <div className="mt-3 p-2 bg-orange-100 border border-orange-200 rounded-lg">
+                      <span className="text-orange-800 font-medium">
+                        Selected: Table {selectedTable}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="border-t border-gray-300 pt-4 mb-4">

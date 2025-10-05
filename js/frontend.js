@@ -182,12 +182,8 @@ function QSRTVDisplay() {
         <h1 className="text-6xl font-bold text-gray-900 mb-3">
           {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Cafe/Bar'} Order Status Board
         </h1>
-        <p className="text-2xl text-gray-600 mb-6">Please wait for your token to be called</p>
         {user && (
           <div className="mb-4">
-            <p className="text-sm text-gray-500 mb-2">
-              Displaying orders for: {user.displayName || user.email} | Orders: {orders.length}
-            </p>
             <button
               onClick={testConnection}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
@@ -242,6 +238,11 @@ function QSRTVDisplay() {
               }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  {order.tableNumber && (
+                    <div className="text-xs font-medium text-blue-600">
+                      🏷️ {order.tableNumber}
+                    </div>
+                  )}
                   <div className="text-yellow-600 text-xl">⏰</div>
                 </div>
                 <div className="space-y-1">
@@ -285,6 +286,11 @@ function QSRTVDisplay() {
               }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  {order.tableNumber && (
+                    <div className="text-xs font-medium text-blue-600">
+                      🏷️ {order.tableNumber}
+                    </div>
+                  )}
                   <div className="text-blue-600 text-xl">👨‍🍳</div>
                 </div>
                 <div className="space-y-1">
@@ -328,6 +334,11 @@ function QSRTVDisplay() {
               }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  {order.tableNumber && (
+                    <div className="text-xs font-medium text-blue-600">
+                      🏷️ {order.tableNumber}
+                    </div>
+                  )}
                   <div className="text-green-600 text-xl">✅</div>
                 </div>
                 <div className="space-y-1">
@@ -371,6 +382,11 @@ function QSRTVDisplay() {
               }`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  {order.tableNumber && (
+                    <div className="text-xs font-medium text-blue-600">
+                      🏷️ {order.tableNumber}
+                    </div>
+                  )}
                   <div className="text-purple-600 text-xl">🎉</div>
                 </div>
                 <div className="space-y-1">
