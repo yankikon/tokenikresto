@@ -8,15 +8,12 @@ function QSRTVDisplay() {
 
   // Authentication effect
   useEffect(() => {
-    const unsubscribe = window.Firebase.onAuthStateChanged(window.Firebase.getAuth(window.Firebase.initializeApp({
-      apiKey: "AIzaSyDLsNt7R642AlKOQXi7v2ZSXyo799PLdY8",
-      authDomain: "tokenik-manage-kitchen-orders.firebaseapp.com",
-      projectId: "tokenik-manage-kitchen-orders",
-      storageBucket: "tokenik-manage-kitchen-orders.firebasestorage.app",
-      messagingSenderId: "425760092391",
-      appId: "1:425760092391:web:95534c87d30a21b8d6f242",
-      measurementId: "G-NEPZ5XVTKW"
-    })), async (user) => {
+    if (!window.Firebase || !window.firebaseAuth) {
+      console.error('Firebase not loaded yet');
+      return;
+    }
+
+    const unsubscribe = window.Firebase.onAuthStateChanged(window.firebaseAuth, async (user) => {
       if (user) {
         setUser(user);
         await loadUserOrders(user.uid);
@@ -33,17 +30,12 @@ function QSRTVDisplay() {
   // Load user-specific orders from Firestore
   const loadUserOrders = async (userId) => {
     try {
-      const db = window.Firebase.getFirestore(window.Firebase.initializeApp({
-        apiKey: "AIzaSyDLsNt7R642AlKOQXi7v2ZSXyo799PLdY8",
-        authDomain: "tokenik-manage-kitchen-orders.firebaseapp.com",
-        projectId: "tokenik-manage-kitchen-orders",
-        storageBucket: "tokenik-manage-kitchen-orders.firebasestorage.app",
-        messagingSenderId: "425760092391",
-        appId: "1:425760092391:web:95534c87d30a21b8d6f242",
-        measurementId: "G-NEPZ5XVTKW"
-      }));
+      if (!window.Firebase || !window.firebaseDb) {
+        console.error('Firebase not loaded yet');
+        return;
+      }
       
-      const ordersRef = window.Firebase.collection(db, 'users', userId, 'orders');
+      const ordersRef = window.Firebase.collection(window.firebaseDb, 'users', userId, 'orders');
       const ordersSnapshot = await window.Firebase.getDocs(ordersRef);
       const userOrders = [];
       
@@ -348,4 +340,16 @@ function QSRTVDisplay() {
   );
 }
 
-ReactDOM.render(<QSRTVDisplay />, document.getElementById('root'));
+// Use React 18 createRoot instead of ReactDOM.render
+// Wait for Firebase to load before rendering
+const renderApp = () => {
+  if (window.Firebase && window.firebaseAuth) {
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<QSRTVDisplay />);
+  } else {
+    // Retry after a short delay
+    setTimeout(renderApp, 100);
+  }
+};
+
+renderApp();
