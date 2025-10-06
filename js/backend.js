@@ -1042,170 +1042,276 @@ function QSRBackend() {
 
             {/* Active Orders Section */}
             {orderMainTab === 'active' && (
-              <div>
-                <div className="bg-white border-b border-gray-200">
-                  <div className="flex">
-                    <button
-                      onClick={() => setOrderSubTab('kitchen')}
-                      className={`flex-1 px-6 py-3 font-medium transition-all ${
-                        orderSubTab === 'kitchen'
-                          ? 'text-pink-600 border-b-2 border-pink-600 bg-pink-50'
-                          : 'text-gray-600 hover:text-pink-600 hover:bg-pink-50'
-                      }`}
-                    >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Kitchen Orders Section */}
+                <div className="bg-white rounded-lg shadow-lg">
+                  <div className="bg-pink-50 border-b border-pink-200 px-6 py-4">
+                    <h2 className="text-2xl font-bold text-pink-800 flex items-center gap-2">
                       🍽️ Kitchen Orders
-                    </button>
-                    <button
-                      onClick={() => setOrderSubTab('bar')}
-                      className={`flex-1 px-6 py-3 font-medium transition-all ${
-                        orderSubTab === 'bar'
-                          ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                          : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                      }`}
-                    >
-                      🍹 Cafe/Bar Orders
-                    </button>
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    {(() => {
+                      const kitchenOrders = orders.filter(order => {
+                        // Apply status filter
+                        if (statusFilter !== 'all' && order.status !== statusFilter) {
+                          return false;
+                        }
+                        
+                        // Only show non-delivered orders in active section (unless filtering for delivered)
+                        if (statusFilter !== 'delivered' && order.status === 'delivered') {
+                          return false;
+                        }
+                        
+                        return order.queue === 'Kitchen' || order.queue === 'Both';
+                      });
+                      
+                      return kitchenOrders.length === 0 ? (
+                        <div className="text-center py-12">
+                          <p className="text-gray-500 text-lg">
+                            {statusFilter === 'all' 
+                              ? 'No kitchen orders yet' 
+                              : `No ${statusFilter} kitchen orders`
+                            }
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            {statusFilter === 'all' 
+                              ? 'Kitchen orders will appear here once placed' 
+                              : 'Try selecting a different status or "Show All Orders"'
+                            }
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {kitchenOrders.map(order => (
+                            <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                                  <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                  {order.tableNumber && (
+                                    <div className="text-sm font-medium text-blue-600 mt-1">
+                                      {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                                       order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                                       `🏷️ Table: ${order.tableNumber}`}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => startEditOrder(order)}
+                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="Edit Order"
+                                  >
+                                    ✏️
+                                  </button>
+                                  <button
+                                    onClick={() => deleteOrder(order.id)}
+                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Cancel Order"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                                {order.items.map((item, idx) => (
+                                  <div key={idx} className="flex justify-between text-lg py-2">
+                                    <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                                    <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                  </div>
+                                ))}
+                                <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
+                                  <span>Total</span>
+                                  <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => updateOrderStatus(order.id, 'pending')}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'pending' 
+                                      ? 'bg-yellow-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Pending
+                                </button>
+                                <button
+                                  onClick={() => updateOrderStatus(order.id, 'preparing')}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'preparing' 
+                                      ? 'bg-blue-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Preparing
+                                </button>
+                                <button
+                                  onClick={() => updateOrderStatus(order.id, 'ready')}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'ready' 
+                                      ? 'bg-green-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Ready
+                                </button>
+                                <button
+                                  onClick={() => deliverOrder(order.id)}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'delivered' 
+                                      ? 'bg-purple-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Delivered
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
-            <div className="bg-white rounded-b-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                {orderSubTab === 'kitchen' ? 'Kitchen Orders' : 'Cafe/Bar Orders'}
-              </h2>
-              
-              {(() => {
-                const filteredOrders = orders.filter(order => {
-                  // Apply status filter
-                  if (statusFilter !== 'all' && order.status !== statusFilter) {
-                    return false;
-                  }
-                  
-                  // Only show non-delivered orders in active section (unless filtering for delivered)
-                  if (statusFilter !== 'delivered' && order.status === 'delivered') {
-                    return false;
-                  }
-                  
-                  if (orderSubTab === 'kitchen') {
-                    return order.queue === 'Kitchen' || order.queue === 'Both';
-                  } else {
-                    return order.queue === 'Bar' || order.queue === 'Both';
-                  }
-                });
-                
-                return filteredOrders.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">
-                      {statusFilter === 'all' 
-                        ? `No ${orderSubTab} orders yet` 
-                        : `No ${statusFilter} ${orderSubTab} orders`
-                      }
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      {statusFilter === 'all' 
-                        ? 'Orders will appear here once placed' 
-                        : 'Try selecting a different status or "Show All Orders"'
-                      }
-                    </p>
+                {/* Bar Orders Section */}
+                <div className="bg-white rounded-lg shadow-lg">
+                  <div className="bg-blue-50 border-b border-blue-200 px-6 py-4">
+                    <h2 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
+                      🍹 Cafe/Bar Orders
+                    </h2>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {filteredOrders.map(order => (
-                  <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
-                    order.queue === 'Kitchen' || order.queue === 'Both' 
-                      ? 'bg-pink-50 border-pink-200' 
-                      : 'bg-blue-50 border-blue-200'
-                  }`}>
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                        <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
-                        {order.tableNumber && (
-                          <div className="text-sm font-medium text-blue-600 mt-1">
-                            {order.tableNumber === 'Take Away' ? '📦 Take Away' :
-                             order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
-                             `🏷️ Table: ${order.tableNumber}`}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => startEditOrder(order)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit Order"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => deleteOrder(order.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Cancel Order"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                      {order.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-lg py-2">
-                          <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                          <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                  <div className="p-6">
+                    {(() => {
+                      const barOrders = orders.filter(order => {
+                        // Apply status filter
+                        if (statusFilter !== 'all' && order.status !== statusFilter) {
+                          return false;
+                        }
+                        
+                        // Only show non-delivered orders in active section (unless filtering for delivered)
+                        if (statusFilter !== 'delivered' && order.status === 'delivered') {
+                          return false;
+                        }
+                        
+                        return order.queue === 'Bar' || order.queue === 'Both';
+                      });
+                      
+                      return barOrders.length === 0 ? (
+                        <div className="text-center py-12">
+                          <p className="text-gray-500 text-lg">
+                            {statusFilter === 'all' 
+                              ? 'No bar orders yet' 
+                              : `No ${statusFilter} bar orders`
+                            }
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            {statusFilter === 'all' 
+                              ? 'Bar orders will appear here once placed' 
+                              : 'Try selecting a different status or "Show All Orders"'
+                            }
+                          </p>
                         </div>
-                      ))}
-                      <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                        <span>Total</span>
-                        <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => updateOrderStatus(order.id, 'pending')}
-                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          (orderCurrentStatus[order.id] || order.status) === 'pending' 
-                            ? 'bg-yellow-500 text-white' 
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        Pending
-                      </button>
-                      <button
-                        onClick={() => updateOrderStatus(order.id, 'preparing')}
-                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          (orderCurrentStatus[order.id] || order.status) === 'preparing' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        Preparing
-                      </button>
-                      <button
-                        onClick={() => updateOrderStatus(order.id, 'ready')}
-                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          (orderCurrentStatus[order.id] || order.status) === 'ready' 
-                            ? 'bg-green-500 text-white' 
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        Ready
-                      </button>
-                      <button
-                        onClick={() => deliverOrder(order.id)}
-                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          (orderCurrentStatus[order.id] || order.status) === 'delivered' 
-                            ? 'bg-purple-500 text-white' 
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        Delivered
-                      </button>
-                    </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {barOrders.map(order => (
+                            <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
+                              <div className="flex items-start justify-between mb-4">
+                                <div>
+                                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                                  <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                  {order.tableNumber && (
+                                    <div className="text-sm font-medium text-blue-600 mt-1">
+                                      {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                                       order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                                       `🏷️ Table: ${order.tableNumber}`}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => startEditOrder(order)}
+                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="Edit Order"
+                                  >
+                                    ✏️
+                                  </button>
+                                  <button
+                                    onClick={() => deleteOrder(order.id)}
+                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Cancel Order"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                                {order.items.map((item, idx) => (
+                                  <div key={idx} className="flex justify-between text-lg py-2">
+                                    <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                                    <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                  </div>
+                                ))}
+                                <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
+                                  <span>Total</span>
+                                  <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => updateOrderStatus(order.id, 'pending')}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'pending' 
+                                      ? 'bg-yellow-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Pending
+                                </button>
+                                <button
+                                  onClick={() => updateOrderStatus(order.id, 'preparing')}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'preparing' 
+                                      ? 'bg-blue-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Preparing
+                                </button>
+                                <button
+                                  onClick={() => updateOrderStatus(order.id, 'ready')}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'ready' 
+                                      ? 'bg-green-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Ready
+                                </button>
+                                <button
+                                  onClick={() => deliverOrder(order.id)}
+                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    (orderCurrentStatus[order.id] || order.status) === 'delivered' 
+                                      ? 'bg-purple-500 text-white' 
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  Delivered
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
+                </div>
               </div>
             )}
 
