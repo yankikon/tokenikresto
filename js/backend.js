@@ -31,7 +31,8 @@ function QSRBackend() {
   const [menuItems, setMenuItems] = useState([]);
   const [orders, setOrders] = useState([]);
   const [newItem, setNewItem] = useState({ name: '', price: '' , category: '' });
-  const [cart, setCart] = useState({});
+  const [kitchenCart, setKitchenCart] = useState({});
+  const [barCart, setBarCart] = useState({});
   const [editingOrder, setEditingOrder] = useState(null);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
   const [clickedButtons, setClickedButtons] = useState({});
@@ -358,7 +359,7 @@ function QSRBackend() {
   };
 
   const updateCart = (itemId, change) => {
-    console.log('updateCart called:', { itemId, change, menuItemsCount: menuItems.length });
+    console.log('updateCart called:', { itemId, change, menuItemsCount: menuItems.length, takeOrderTab });
     console.log('Menu items available:', menuItems);
     
     // Check if the item exists in menu items (using string ID)
@@ -371,12 +372,17 @@ function QSRBackend() {
       return;
     }
     
-    setCart(prev => {
+    // Determine which cart to update based on current tab
+    const isKitchenTab = takeOrderTab === 'kitchen';
+    const setCartFunction = isKitchenTab ? setKitchenCart : setBarCart;
+    const getCurrentCart = isKitchenTab ? kitchenCart : barCart;
+    
+    setCartFunction(prev => {
       const newCart = { ...prev };
       const currentQty = newCart[itemId] || 0;
       const newQty = currentQty + change;
       
-      console.log('Cart update:', { itemId, currentQty, change, newQty });
+      console.log('Cart update:', { itemId, currentQty, change, newQty, cartType: isKitchenTab ? 'kitchen' : 'bar' });
       
       if (newQty <= 0) {
         delete newCart[itemId];
@@ -390,7 +396,10 @@ function QSRBackend() {
   };
 
   const placeOrder = async () => {
-    if (Object.keys(cart).length === 0 || !user) return;
+    // Get the current cart based on the active tab
+    const currentCart = takeOrderTab === 'kitchen' ? kitchenCart : barCart;
+    
+    if (Object.keys(currentCart).length === 0 || !user) return;
     
     // Check if table number is selected
     if (!selectedTable) {
@@ -398,10 +407,11 @@ function QSRBackend() {
       return;
     }
     
-    console.log('Cart items:', Object.entries(cart));
+    console.log('Cart items:', Object.entries(currentCart));
     console.log('Available menu items:', menuItems);
+    console.log('Current tab:', takeOrderTab);
     
-    const orderItems = Object.entries(cart)
+    const orderItems = Object.entries(currentCart)
       .map(([itemId, qty]) => {
         const item = menuItems.find(m => m.id === itemId);
         console.log(`Looking for item ID ${itemId}, found:`, item);
@@ -418,95 +428,49 @@ function QSRBackend() {
       return;
     }
 
-    // Separate items by category
-    const kitchenItems = orderItems.filter(item => item.category === 'Kitchen');
-    const barItems = orderItems.filter(item => item.category === 'Bar');
+    // Since we're using separate carts, all items in the current cart are of the same category
+    const isKitchenOrder = takeOrderTab === 'kitchen';
+    const orderCategory = isKitchenOrder ? 'Kitchen' : 'Bar';
     
-    const ordersToCreate = [];
+    // Create order for the current category
+    const orderId = Date.now().toString() + (isKitchenOrder ? '_K' : '_B');
+    const token = generateToken(orderCategory);
+    const now = new Date();
     
-    // Create separate order for kitchen items if any
-    if (kitchenItems.length > 0) {
-      const kitchenOrderId = Date.now().toString() + '_K';
-      const kitchenToken = generateToken('Kitchen');
-      const now = new Date();
-      
-      const cleanKitchenItems = kitchenItems.map(item => {
-        const cleanItem = {
-          id: item.id || null,
-          name: item.name || '',
-          price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
-          category: item.category || 'Kitchen',
-          quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
-        };
-        
-        // Remove any undefined values
-        Object.keys(cleanItem).forEach(key => {
-          if (cleanItem[key] === undefined) {
-            delete cleanItem[key];
-          }
-        });
-        
-        return cleanItem;
-      });
-
-      const kitchenOrder = {
-        id: kitchenOrderId,
-        token: kitchenToken,
-        items: cleanKitchenItems,
-        status: 'pending',
-        queue: 'Kitchen',
-        tableNumber: selectedTable,
-        timestamp: now.toLocaleTimeString(),
-        date: now.toLocaleDateString(),
-        userId: user.uid,
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString()
+    const cleanOrderItems = orderItems.map(item => {
+      const cleanItem = {
+        id: item.id || null,
+        name: item.name || '',
+        price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
+        category: item.category || orderCategory,
+        quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
       };
       
-      ordersToCreate.push(kitchenOrder);
-    }
-    
-    // Create separate order for bar items if any
-    if (barItems.length > 0) {
-      const barOrderId = Date.now().toString() + '_B';
-      const barToken = generateToken('Bar');
-      const now = new Date();
-      
-      const cleanBarItems = barItems.map(item => {
-        const cleanItem = {
-          id: item.id || null,
-          name: item.name || '',
-          price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
-          category: item.category || 'Bar',
-          quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
-        };
-        
-        // Remove any undefined values
-        Object.keys(cleanItem).forEach(key => {
-          if (cleanItem[key] === undefined) {
-            delete cleanItem[key];
-          }
-        });
-        
-        return cleanItem;
+      // Remove any undefined values
+      Object.keys(cleanItem).forEach(key => {
+        if (cleanItem[key] === undefined) {
+          delete cleanItem[key];
+        }
       });
-
-      const barOrder = {
-        id: barOrderId,
-        token: barToken,
-        items: cleanBarItems,
-        status: 'pending',
-        queue: 'Bar',
-        tableNumber: selectedTable,
-        timestamp: now.toLocaleTimeString(),
-        date: now.toLocaleDateString(),
-        userId: user.uid,
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString()
-      };
       
-      ordersToCreate.push(barOrder);
-    }
+      return cleanItem;
+    });
+
+    const newOrder = {
+      id: orderId,
+      token: token,
+      items: cleanOrderItems,
+      status: 'pending',
+      queue: orderCategory,
+      tableNumber: selectedTable,
+      timestamp: now.toLocaleTimeString(),
+      date: now.toLocaleDateString(),
+      userId: user.uid,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString()
+    };
+    
+    const ordersToCreate = [newOrder];
 
     console.log('Creating orders:', ordersToCreate);
 
@@ -550,27 +514,41 @@ function QSRBackend() {
       
       // Update local state
       setOrders([...ordersToCreate, ...orders]);
-      setCart({});
+      
+      // Clear the appropriate cart based on current tab
+      if (isKitchenOrder) {
+        setKitchenCart({});
+      } else {
+        setBarCart({});
+      }
+      
       setSelectedTable(''); // Clear selected table
       
       const tokens = ordersToCreate.map(order => order.token).join(', ');
       const orderTypes = ordersToCreate.map(order => order.queue).join(' and ');
-      alert(`Orders placed successfully! Tokens: ${tokens} (${orderTypes})`);
-      console.log('Orders created and saved to Firestore');
+      alert(`Order placed successfully! Token: ${tokens} (${orderTypes})`);
+      console.log('Order created and saved to Firestore');
     } catch (error) {
-      console.error('Error saving orders to Firestore:', error);
+      console.error('Error saving order to Firestore:', error);
       console.error('Error details:', error.message);
       console.error('Error code:', error.code);
       
       // Fallback to local state
       setOrders([...ordersToCreate, ...orders]);
-      setCart({});
+      
+      // Clear the appropriate cart based on current tab
+      if (isKitchenOrder) {
+        setKitchenCart({});
+      } else {
+        setBarCart({});
+      }
+      
       setSelectedTable(''); // Clear selected table
       
       // Show user-friendly error message
       const tokens = ordersToCreate.map(order => order.token).join(', ');
       const orderTypes = ordersToCreate.map(order => order.queue).join(' and ');
-      alert(`Orders placed successfully! Tokens: ${tokens} (${orderTypes}), but there was an issue saving to cloud storage. Your orders are saved locally.`);
+      alert(`Order placed successfully! Token: ${tokens} (${orderTypes}), but there was an issue saving to cloud storage. Your order is saved locally.`);
     }
   };
 
@@ -731,14 +709,24 @@ function QSRBackend() {
     order.items.forEach(item => {
       editCart[item.id] = item.quantity;
     });
-    setCart(editCart);
+    
+    // Set the appropriate cart based on order category
+    if (order.queue === 'Kitchen') {
+      setKitchenCart(editCart);
+      setTakeOrderTab('kitchen');
+    } else {
+      setBarCart(editCart);
+      setTakeOrderTab('bar');
+    }
+    
     setActiveTab('takeOrder');
   };
 
   const updateOrder = () => {
-    if (Object.keys(cart).length === 0 || !editingOrder) return;
+    const currentCart = takeOrderTab === 'kitchen' ? kitchenCart : barCart;
+    if (Object.keys(currentCart).length === 0 || !editingOrder) return;
     
-    const orderItems = Object.entries(cart)
+    const orderItems = Object.entries(currentCart)
       .map(([itemId, qty]) => {
         const item = menuItems.find(m => m.id === itemId);
         return item ? { ...item, quantity: qty } : null;
@@ -765,18 +753,25 @@ function QSRBackend() {
   };
 
   const cancelEdit = () => {
-    setCart({});
+    // Clear the appropriate cart based on current tab
+    if (takeOrderTab === 'kitchen') {
+      setKitchenCart({});
+    } else {
+      setBarCart({});
+    }
     setSelectedTable(''); // Clear selected table
     setEditingOrder(null);
     setActiveTab('orders');
   };
 
-  const getTotalItems = () => {
-    return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+  const getTotalItems = (cartToUse = null) => {
+    const currentCart = cartToUse || (takeOrderTab === 'kitchen' ? kitchenCart : barCart);
+    return Object.values(currentCart).reduce((sum, qty) => sum + qty, 0);
   };
 
-  const getTotalPrice = () => {
-    return Object.entries(cart).reduce((sum, [itemId, qty]) => {
+  const getTotalPrice = (cartToUse = null) => {
+    const currentCart = cartToUse || (takeOrderTab === 'kitchen' ? kitchenCart : barCart);
+    return Object.entries(currentCart).reduce((sum, [itemId, qty]) => {
       const item = menuItems.find(m => m.id === itemId);
       return sum + (item ? item.price * qty : 0);
     }, 0);
@@ -1758,12 +1753,16 @@ function QSRBackend() {
               </div>
             </div>
 
-            {Object.keys(cart).length > 0 && (
+            {(() => {
+              const currentCart = takeOrderTab === 'kitchen' ? kitchenCart : barCart;
+              return Object.keys(currentCart).length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  {takeOrderTab === 'kitchen' ? '🍽️ Kitchen Order Summary' : '🍹 Bar Order Summary'}
+                </h3>
                 
                 <div className="space-y-2 mb-4">
-                  {Object.entries(cart).map(([itemId, qty]) => {
+                  {Object.entries(currentCart).map(([itemId, qty]) => {
                     const item = menuItems.find(m => m.id === itemId);
                     console.log('Cart summary - looking for item ID:', itemId, 'found:', item);
                     return item ? (
@@ -1864,7 +1863,8 @@ function QSRBackend() {
                   )}
                 </div>
               </div>
-            )}
+              );
+            })()}
           </div>
         )}
 
