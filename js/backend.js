@@ -238,9 +238,6 @@ function QSRBackend() {
     let counterKey = 'kitchen';
     if (queue === 'Bar') {
       counterKey = 'bar';
-    } else if (queue === 'Both') {
-      // For mixed orders, default to Kitchen
-      counterKey = 'kitchen';
     }
     
     // Ensure orderCounters has default values
@@ -258,7 +255,7 @@ function QSRBackend() {
     
     const paddedNumber = newCounterValue.toString().padStart(4, '0');
     
-    if (queue === 'Kitchen' || queue === 'Both') {
+    if (queue === 'Kitchen') {
       return `K-${paddedNumber}`;
     } else if (queue === 'Bar') {
       return `B-${paddedNumber}`;
@@ -421,111 +418,159 @@ function QSRBackend() {
       return;
     }
 
-    // Determine queue based on item categories
-    const hasBarItems = orderItems.some(item => item.category === 'Bar');
-    const hasKitchenItems = orderItems.some(item => item.category === 'Kitchen');
+    // Separate items by category
+    const kitchenItems = orderItems.filter(item => item.category === 'Kitchen');
+    const barItems = orderItems.filter(item => item.category === 'Bar');
     
-    let queue = 'Kitchen'; // Default
-    if (hasBarItems && !hasKitchenItems) {
-      queue = 'Bar';
-    } else if (hasBarItems && hasKitchenItems) {
-      queue = 'Both';
-    }
+    const ordersToCreate = [];
+    
+    // Create separate order for kitchen items if any
+    if (kitchenItems.length > 0) {
+      const kitchenOrderId = Date.now().toString() + '_K';
+      const kitchenToken = generateToken('Kitchen');
+      const now = new Date();
+      
+      const cleanKitchenItems = kitchenItems.map(item => {
+        const cleanItem = {
+          id: item.id || null,
+          name: item.name || '',
+          price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
+          category: item.category || 'Kitchen',
+          quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
+        };
+        
+        // Remove any undefined values
+        Object.keys(cleanItem).forEach(key => {
+          if (cleanItem[key] === undefined) {
+            delete cleanItem[key];
+          }
+        });
+        
+        return cleanItem;
+      });
 
-    const orderId = Date.now().toString();
-    
-    // Clean order items to ensure they're Firestore-compatible
-    const cleanOrderItems = orderItems.map(item => {
-      const cleanItem = {
-        id: item.id || null,
-        name: item.name || '',
-        price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
-        category: item.category || 'Kitchen',
-        quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
+      const kitchenOrder = {
+        id: kitchenOrderId,
+        token: kitchenToken,
+        items: cleanKitchenItems,
+        status: 'pending',
+        queue: 'Kitchen',
+        tableNumber: selectedTable,
+        timestamp: now.toLocaleTimeString(),
+        date: now.toLocaleDateString(),
+        userId: user.uid,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
       };
       
-      // Remove any undefined values
-      Object.keys(cleanItem).forEach(key => {
-        if (cleanItem[key] === undefined) {
-          delete cleanItem[key];
-        }
-      });
+      ordersToCreate.push(kitchenOrder);
+    }
+    
+    // Create separate order for bar items if any
+    if (barItems.length > 0) {
+      const barOrderId = Date.now().toString() + '_B';
+      const barToken = generateToken('Bar');
+      const now = new Date();
       
-      return cleanItem;
-    });
+      const cleanBarItems = barItems.map(item => {
+        const cleanItem = {
+          id: item.id || null,
+          name: item.name || '',
+          price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
+          category: item.category || 'Bar',
+          quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1
+        };
+        
+        // Remove any undefined values
+        Object.keys(cleanItem).forEach(key => {
+          if (cleanItem[key] === undefined) {
+            delete cleanItem[key];
+          }
+        });
+        
+        return cleanItem;
+      });
 
-    const newOrder = {
-      id: orderId,
-      token: generateToken(queue),
-      items: cleanOrderItems,
-      status: 'pending',
-      queue: queue,
-      tableNumber: selectedTable,
-      timestamp: new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString(),
-      userId: user.uid,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    // Remove any undefined values from the main order object
-    Object.keys(newOrder).forEach(key => {
-      if (newOrder[key] === undefined) {
-        delete newOrder[key];
-      }
-    });
-    
+      const barOrder = {
+        id: barOrderId,
+        token: barToken,
+        items: cleanBarItems,
+        status: 'pending',
+        queue: 'Bar',
+        tableNumber: selectedTable,
+        timestamp: now.toLocaleTimeString(),
+        date: now.toLocaleDateString(),
+        userId: user.uid,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      };
+      
+      ordersToCreate.push(barOrder);
+    }
+
+    console.log('Creating orders:', ordersToCreate);
+
     // Save to Firestore
     try {
       console.log('=== DEBUGGING ORDER DATA ===');
-      console.log('Raw newOrder object:', JSON.stringify(newOrder, null, 2));
+      console.log('Orders to create:', ordersToCreate);
       console.log('User ID:', user.uid);
       console.log('Firebase instances:', { Firebase: !!window.Firebase, db: !!db });
       
-      // Deep clean the order object to remove any undefined values
-      const cleanedOrder = JSON.parse(JSON.stringify(newOrder, (key, value) => {
-        if (value === undefined) {
-          console.warn(`Found undefined value for key: ${key}`);
-          return null;
-        }
-        return value;
-      }));
-      
-      // Remove null values as well
-      Object.keys(cleanedOrder).forEach(key => {
-        if (cleanedOrder[key] === null || cleanedOrder[key] === undefined) {
-          console.warn(`Removing null/undefined value for key: ${key}`);
-          delete cleanedOrder[key];
-        }
-      });
-      
-      console.log('Cleaned order object:', JSON.stringify(cleanedOrder, null, 2));
-      
-      const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
-      const orderDoc = window.Firebase.doc(ordersRef, orderId);
-      
-      console.log('Orders reference:', ordersRef);
-      console.log('Order document reference:', orderDoc);
-      
-      await window.Firebase.setDoc(orderDoc, cleanedOrder);
-      console.log('Order saved successfully to Firestore with ID:', orderId);
+      // Save each order to Firestore
+      for (const order of ordersToCreate) {
+        // Deep clean the order object to remove any undefined values
+        const cleanedOrder = JSON.parse(JSON.stringify(order, (key, value) => {
+          if (value === undefined) {
+            console.warn(`Found undefined value for key: ${key}`);
+            return null;
+          }
+          return value;
+        }));
+        
+        // Remove null values as well
+        Object.keys(cleanedOrder).forEach(key => {
+          if (cleanedOrder[key] === null || cleanedOrder[key] === undefined) {
+            console.warn(`Removing null/undefined value for key: ${key}`);
+            delete cleanedOrder[key];
+          }
+        });
+        
+        console.log('Cleaned order object:', JSON.stringify(cleanedOrder, null, 2));
+        
+        const ordersRef = window.Firebase.collection(db, 'users', user.uid, 'orders');
+        const orderDoc = window.Firebase.doc(ordersRef, order.id);
+        
+        console.log('Orders reference:', ordersRef);
+        console.log('Order document reference:', orderDoc);
+        
+        await window.Firebase.setDoc(orderDoc, cleanedOrder);
+        console.log('Order saved successfully to Firestore with ID:', order.id);
+      }
       
       // Update local state
-    setOrders([newOrder, ...orders]);
-    setCart({});
+      setOrders([...ordersToCreate, ...orders]);
+      setCart({});
       setSelectedTable(''); // Clear selected table
+      
+      const tokens = ordersToCreate.map(order => order.token).join(', ');
+      const orderTypes = ordersToCreate.map(order => order.queue).join(' and ');
+      alert(`Orders placed successfully! Tokens: ${tokens} (${orderTypes})`);
+      console.log('Orders created and saved to Firestore');
     } catch (error) {
-      console.error('Error saving order to Firestore:', error);
+      console.error('Error saving orders to Firestore:', error);
       console.error('Error details:', error.message);
       console.error('Error code:', error.code);
       
       // Fallback to local state
-      setOrders([newOrder, ...orders]);
+      setOrders([...ordersToCreate, ...orders]);
       setCart({});
       setSelectedTable(''); // Clear selected table
       
       // Show user-friendly error message
-      alert('Order placed successfully, but there was an issue saving to cloud storage. Your order is saved locally.');
+      const tokens = ordersToCreate.map(order => order.token).join(', ');
+      const orderTypes = ordersToCreate.map(order => order.queue).join(' and ');
+      alert(`Orders placed successfully! Tokens: ${tokens} (${orderTypes}), but there was an issue saving to cloud storage. Your orders are saved locally.`);
     }
   };
 
@@ -1063,7 +1108,7 @@ function QSRBackend() {
                           return false;
                         }
                         
-                        return order.queue === 'Kitchen' || order.queue === 'Both';
+                        return order.queue === 'Kitchen';
                       });
                       
                       return kitchenOrders.length === 0 ? (
@@ -1198,7 +1243,7 @@ function QSRBackend() {
                           return false;
                         }
                         
-                        return order.queue === 'Bar' || order.queue === 'Both';
+                        return order.queue === 'Bar';
                       });
                       
                       return barOrders.length === 0 ? (
@@ -1346,7 +1391,7 @@ function QSRBackend() {
                   <div className="space-y-3">
                           {pendingBillingOrders.map(order => (
                             <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
-                              order.queue === 'Kitchen' || order.queue === 'Both' 
+                              order.queue === 'Kitchen' 
                                 ? 'bg-pink-50 border-pink-200' 
                                 : 'bg-blue-50 border-blue-200'
                             }`}>
@@ -1425,8 +1470,8 @@ function QSRBackend() {
                         return true;
                       });
                       
-                      const kitchenOrders = completedBillingOrders.filter(order => order.queue === 'Kitchen' || order.queue === 'Both');
-                      const barOrders = completedBillingOrders.filter(order => order.queue === 'Bar' || order.queue === 'Both');
+                      const kitchenOrders = completedBillingOrders.filter(order => order.queue === 'Kitchen');
+                      const barOrders = completedBillingOrders.filter(order => order.queue === 'Bar');
                       
                       const kitchenTotal = kitchenOrders.reduce((sum, order) => {
                         return sum + order.items.reduce((orderSum, item) => orderSum + (item.price * item.quantity), 0);
