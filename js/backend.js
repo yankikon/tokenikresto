@@ -746,7 +746,12 @@ function QSRBackend() {
         : order
     ));
     
-    setCart({});
+    // Clear the appropriate cart based on current tab
+    if (takeOrderTab === 'kitchen') {
+      setKitchenCart({});
+    } else {
+      setBarCart({});
+    }
     setSelectedTable(''); // Clear selected table
     setEditingOrder(null);
     setActiveTab('orders');
@@ -1717,7 +1722,7 @@ function QSRBackend() {
                       </button>
                       
                       <div className="text-xl font-bold text-gray-900 min-w-[40px] text-center">
-                        {cart[item.id] || 0}
+                        {(takeOrderTab === 'kitchen' ? kitchenCart : barCart)[item.id] || 0}
                       </div>
                       
                       <button
