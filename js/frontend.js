@@ -58,10 +58,17 @@ function QSRTVDisplay() {
         }
       });
       
+      // Filter orders for today only
+      const today = new Date().toDateString();
+      const todayOrders = userOrders.filter(order => {
+        const orderDate = new Date(order.createdAt || order.date).toDateString();
+        return orderDate === today;
+      });
+      
       // Sort by createdAt descending
-      userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-      console.log('Loaded orders:', userOrders);
-      setOrders(userOrders);
+      todayOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      console.log('Loaded today orders:', todayOrders);
+      setOrders(todayOrders);
     } catch (error) {
       console.error('Error loading user orders:', error);
       setOrders([]);
@@ -92,10 +99,17 @@ function QSRTVDisplay() {
         }
       });
       
+      // Filter orders for today only
+      const today = new Date().toDateString();
+      const todayOrders = userOrders.filter(order => {
+        const orderDate = new Date(order.createdAt || order.date).toDateString();
+        return orderDate === today;
+      });
+      
       // Sort by createdAt descending
-      userOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-      console.log('Real-time orders update - final orders:', userOrders);
-      setOrders(userOrders);
+      todayOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      console.log('Real-time orders update - today orders:', todayOrders);
+      setOrders(todayOrders);
     }, (error) => {
       console.error('Error in real-time listener:', error);
     });

@@ -83,6 +83,38 @@ function QSRBackend() {
       
       setOrders(userOrders);
 
+      // Initialize order counters based on today's orders
+      const today = new Date().toDateString();
+      const todayOrders = userOrders.filter(order => {
+        const orderDate = new Date(order.createdAt || order.date).toDateString();
+        return orderDate === today;
+      });
+      
+      // Count today's orders by type
+      let maxKitchenCount = 0;
+      let maxBarCount = 0;
+      
+      todayOrders.forEach(order => {
+        if (order.queue === 'Kitchen') {
+          const match = order.token?.match(/K-(\d+)/);
+          if (match) {
+            const count = parseInt(match[1]);
+            maxKitchenCount = Math.max(maxKitchenCount, count);
+          }
+        } else if (order.queue === 'Bar') {
+          const match = order.token?.match(/B-(\d+)/);
+          if (match) {
+            const count = parseInt(match[1]);
+            maxBarCount = Math.max(maxBarCount, count);
+          }
+        }
+      });
+      
+      setOrderCounters({
+        kitchen: maxKitchenCount,
+        bar: maxBarCount
+      });
+
       // Load menu items
       const menuRef = window.Firebase.collection(db, 'users', userId, 'menu');
       const menuSnapshot = await window.Firebase.getDocs(menuRef);
@@ -241,14 +273,11 @@ function QSRBackend() {
       counterKey = 'bar';
     }
     
-    // Ensure orderCounters has default values
-    const currentCounters = {
-      kitchen: orderCounters.kitchen || 0,
-      bar: orderCounters.bar || 0
-    };
+    // Get current counter value and increment
+    const currentValue = orderCounters[counterKey] || 0;
+    const newCounterValue = currentValue + 1;
     
-    const newCounterValue = currentCounters[counterKey] + 1;
-    
+    // Update the counter state
     setOrderCounters(prev => ({
       ...prev,
       [counterKey]: newCounterValue
@@ -1011,7 +1040,11 @@ function QSRBackend() {
                     }`}
                   >
                     <div className={`text-2xl font-bold ${orderSubTab === 'pending' && orderMainTab === 'completed' ? 'text-white' : 'text-yellow-800'}`}>
-                      {orders.filter(o => o.status === 'delivered' && (o.billingStatus === 'pending_billing' || !o.billingStatus)).length}
+                      {orders.filter(o => {
+                        const orderDate = new Date(o.createdAt || o.date).toDateString();
+                        const today = new Date().toDateString();
+                        return o.status === 'delivered' && (o.billingStatus === 'pending_billing' || !o.billingStatus) && orderDate === today;
+                      }).length}
                     </div>
                     <div className={`text-sm ${orderSubTab === 'pending' && orderMainTab === 'completed' ? 'text-white' : 'text-yellow-600'}`}>Pending Billing</div>
                   </button>
@@ -1027,7 +1060,11 @@ function QSRBackend() {
                     }`}
                   >
                     <div className={`text-2xl font-bold ${orderSubTab === 'completed' && orderMainTab === 'completed' ? 'text-white' : 'text-green-800'}`}>
-                      {orders.filter(o => o.status === 'delivered' && o.billingStatus === 'billing_completed').length}
+                      {orders.filter(o => {
+                        const orderDate = new Date(o.createdAt || o.date).toDateString();
+                        const today = new Date().toDateString();
+                        return o.status === 'delivered' && o.billingStatus === 'billing_completed' && orderDate === today;
+                      }).length}
                     </div>
                     <div className={`text-sm ${orderSubTab === 'completed' && orderMainTab === 'completed' ? 'text-white' : 'text-green-600'}`}>Completed Billing</div>
                   </button>
@@ -1373,11 +1410,10 @@ function QSRBackend() {
                         if (order.status !== 'delivered') return false;
                         if (!(order.billingStatus === 'pending_billing' || !order.billingStatus)) return false;
                         
-                        // Apply date filter if selected
-                        if (selectedDate) {
-                          const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
-                          if (orderDate !== selectedDate) return false;
-                        }
+                        // Filter for today's orders only
+                        const orderDate = new Date(order.createdAt || order.date).toDateString();
+                        const today = new Date().toDateString();
+                        if (orderDate !== today) return false;
                         
                         return true;
                       });
@@ -1461,11 +1497,10 @@ function QSRBackend() {
                         if (order.status !== 'delivered') return false;
                         if (order.billingStatus !== 'billing_completed') return false;
                         
-                        // Apply date filter if selected
-                        if (selectedDate) {
-                          const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
-                          if (orderDate !== selectedDate) return false;
-                        }
+                        // Filter for today's orders only
+                        const orderDate = new Date(order.createdAt || order.date).toDateString();
+                        const today = new Date().toDateString();
+                        if (orderDate !== today) return false;
                         
                         return true;
                       });
