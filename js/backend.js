@@ -1403,8 +1403,6 @@ function QSRBackend() {
                 {/* Pending Billing Orders */}
                 {orderSubTab === 'pending' && (
                   <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Pending Billing Orders</h2>
-                    
                     {(() => {
                       const pendingBillingOrders = orders.filter(order => {
                         if (order.status !== 'delivered') return false;
@@ -1418,71 +1416,163 @@ function QSRBackend() {
                         return true;
                       });
                       
-                      return pendingBillingOrders.length === 0 ? (
-                        <div className="text-center py-12">
-                          <p className="text-gray-500 text-lg">No pending billing orders</p>
-                          <p className="text-gray-400 text-sm">Delivered orders waiting for billing will appear here</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                          {pendingBillingOrders.map(order => (
-                            <div key={order.id} className={`rounded-xl shadow-md p-6 border ${
-                              order.queue === 'Kitchen' 
-                                ? 'bg-pink-50 border-pink-200' 
-                                : 'bg-blue-50 border-blue-200'
-                            }`}>
-                      <div className="flex items-start justify-between mb-4">
+                      const kitchenOrders = pendingBillingOrders.filter(order => order.queue === 'Kitchen');
+                      const barOrders = pendingBillingOrders.filter(order => order.queue === 'Bar');
+                      
+                      const kitchenTotal = kitchenOrders.reduce((sum, order) => {
+                        return sum + order.items.reduce((orderSum, item) => orderSum + (item.price * item.quantity), 0);
+                      }, 0);
+                      
+                      const barTotal = barOrders.reduce((sum, order) => {
+                        return sum + order.items.reduce((orderSum, item) => orderSum + (item.price * item.quantity), 0);
+                      }, 0);
+                      
+                      return (
                         <div>
-                          <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                          <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
-                                  {order.tableNumber && (
-                                    <div className="text-sm font-medium text-blue-600 mt-1">
-                                      🏷️ Table: {order.tableNumber}
+                          <h2 className="text-2xl font-bold text-gray-900 mb-6">Pending Billing Orders</h2>
+                          
+                          {pendingBillingOrders.length === 0 ? (
+                            <div className="text-center py-12">
+                              <p className="text-gray-500 text-lg">No pending billing orders</p>
+                              <p className="text-gray-400 text-sm">Delivered orders waiting for billing will appear here</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-6">
+                              {/* Kitchen Pending Billing */}
+                              {kitchenOrders.length > 0 && (
+                                <div>
+                                  <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Pending Kitchen Orders</h3>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                                      <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
                                     </div>
-                                  )}
-                                  {order.deliveredAt && (
-                            <div className="text-xs text-gray-400">
-                                      Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
+                                  </div>
+                                  <div className="space-y-3">
+                                    {kitchenOrders.map(order => (
+                                      <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
+                                        <div className="flex items-start justify-between mb-4">
+                                          <div>
+                                            <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                                            <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            {order.tableNumber && (
+                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                                {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                                                 order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                                                 `🏷️ Table: ${order.tableNumber}`}
+                                              </div>
+                                            )}
+                                            {order.deliveredAt && (
+                                              <div className="text-xs text-gray-400">
+                                                Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
+                                              </div>
+                                            )}
+                                            {order.queue && (
+                                              <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-green-100 text-green-800">
+                                                {order.queue} Queue
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="bg-white rounded-lg p-4 mb-4">
+                                          {order.items.map((item, idx) => (
+                                            <div key={idx} className="flex justify-between text-lg py-2">
+                                              <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                                              <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                            </div>
+                                          ))}
+                                          <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
+                                            <span>Total</span>
+                                            <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                          <p className="text-gray-900 font-medium text-center mb-3">
+                                            Order delivered - Ready for billing completion
+                                          </p>
+                                          <button
+                                            onClick={() => completeBilling(order.id)}
+                                            className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                          >
+                                            Billing Completed
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Bar Pending Billing */}
+                              {barOrders.length > 0 && (
+                                <div>
+                                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Pending Cafe/Bar Orders</h3>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                                      <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-3">
+                                    {barOrders.map(order => (
+                                      <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
+                                        <div className="flex items-start justify-between mb-4">
+                                          <div>
+                                            <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                                            <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            {order.tableNumber && (
+                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                                {order.tableNumber === 'Take Away' ? '📦 Take Away' :
+                                                 order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
+                                                 `🏷️ Table: ${order.tableNumber}`}
+                                              </div>
+                                            )}
+                                            {order.deliveredAt && (
+                                              <div className="text-xs text-gray-400">
+                                                Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
+                                              </div>
+                                            )}
+                                            {order.queue && (
+                                              <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-blue-100 text-blue-800">
+                                                {order.queue} Queue
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="bg-white rounded-lg p-4 mb-4">
+                                          {order.items.map((item, idx) => (
+                                            <div key={idx} className="flex justify-between text-lg py-2">
+                                              <span className="text-gray-700">{item.name} × {item.quantity}</span>
+                                              <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                            </div>
+                                          ))}
+                                          <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
+                                            <span>Total</span>
+                                            <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                          <p className="text-gray-900 font-medium text-center mb-3">
+                                            Order delivered - Ready for billing completion
+                                          </p>
+                                          <button
+                                            onClick={() => completeBilling(order.id)}
+                                            className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                          >
+                                            Billing Completed
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
-                                  {order.queue && (
-                                    <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
-                                      order.queue === 'Bar' ? 'bg-blue-100 text-blue-800' :
-                                      order.queue === 'Kitchen' ? 'bg-green-100 text-green-800' :
-                                      'bg-purple-100 text-purple-800'
-                                    }`}>
-                                      {order.queue} Queue
-                        </div>
-                                  )}
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white rounded-lg p-4 mb-4">
-                        {order.items.map((item, idx) => (
-                                  <div key={idx} className="flex justify-between text-lg py-2">
-                            <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                            <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
-                          </div>
-                        ))}
-                                <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                          <span>Total</span>
-                          <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
-                        </div>
-                      </div>
-                      
-                              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                                <p className="text-gray-900 font-medium text-center mb-3">
-                                  Order delivered - Ready for billing completion
-                                </p>
-                                <button
-                                  onClick={() => completeBilling(order.id)}
-                                  className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                                >
-                                  Billing Completed
-                                </button>
-                      </div>
-                    </div>
-                    ))}
                         </div>
                       );
                     })()}
@@ -1825,19 +1915,37 @@ function QSRBackend() {
                     🏷️ Select Table Number
                   </label>
                   <div className="grid grid-cols-5 gap-2">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(tableNum => (
-                      <button
-                        key={tableNum}
-                        onClick={() => setSelectedTable(tableNum.toString())}
-                        className={`p-3 rounded-lg font-medium transition-all ${
-                          selectedTable === tableNum.toString()
-                            ? 'bg-orange-500 text-white shadow-md'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50 hover:border-orange-300'
-                        }`}
-                      >
-                        {tableNum}
-                      </button>
-                    ))}
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(tableNum => {
+                      // Check if this table has any active orders (not delivered and not billing completed)
+                      const tableOrders = orders.filter(order => 
+                        order.tableNumber === tableNum.toString() && 
+                        order.status !== 'delivered' &&
+                        order.billingStatus !== 'billing_completed'
+                      );
+                      const hasActiveOrder = tableOrders.length > 0;
+                      
+                      return (
+                        <button
+                          key={tableNum}
+                          onClick={() => setSelectedTable(tableNum.toString())}
+                          className={`p-3 rounded-lg font-medium transition-all relative ${
+                            selectedTable === tableNum.toString()
+                              ? 'bg-orange-500 text-white shadow-md'
+                              : hasActiveOrder
+                              ? 'bg-red-100 text-red-700 border-2 border-red-400 hover:bg-red-200'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50 hover:border-orange-300'
+                          }`}
+                        >
+                          {tableNum}
+                          {hasActiveOrder && (
+                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                   <div className="mt-3 flex gap-2">
                     <button
@@ -1864,10 +1972,20 @@ function QSRBackend() {
                   {selectedTable && (
                     <div className="mt-3 p-2 bg-orange-100 border border-orange-200 rounded-lg">
                       <span className="text-orange-800 font-medium">
-                        Selected: Table {selectedTable}
+                        Selected: {selectedTable === 'Take Away' ? '📦 Take Away' : 
+                                  selectedTable === 'Home Delivery' ? '🚚 Home Delivery' : 
+                                  `Table ${selectedTable}`}
                       </span>
                     </div>
                   )}
+                  <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm text-blue-800">
+                      <span className="flex h-3 w-3">
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                      </span>
+                      <span className="font-medium">= Table has an active order</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="border-t border-gray-300 pt-4 mb-4">
