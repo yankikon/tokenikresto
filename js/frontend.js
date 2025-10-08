@@ -181,23 +181,23 @@ function QSRTVDisplay() {
   // Show loading screen while authenticating
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f1419' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#10b981' }}></div>
+          <p style={{ color: '#b3b7c7' }}>Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="min-h-screen p-8" style={{ background: '#0f1419' }}>
       {/* Header with Logo and Title */}
       <div className="flex items-center justify-center gap-6 mb-8">
-        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center p-2">
+        <div className="w-16 h-16 rounded-lg flex items-center justify-center p-2" style={{ background: '#1e2330' }}>
           <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
         </div>
-        <h1 className="text-6xl font-bold text-gray-900">
+        <h1 className="text-6xl font-bold" style={{ color: '#e8eaed' }}>
           {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Cafe/Bar'} Order Status Board
         </h1>
       </div>
@@ -207,21 +207,21 @@ function QSRTVDisplay() {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => setBoardType('kitchen')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              boardType === 'kitchen'
-                ? 'bg-orange-500 text-white shadow-lg'
-                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
-            }`}
+            className="px-6 py-3 rounded-lg font-medium transition-all shadow-lg"
+            style={boardType === 'kitchen'
+              ? { background: '#ec4899', color: '#ffffff' }
+              : { background: '#1a1f2e', color: '#b3b7c7', border: '1px solid #2a3142' }
+            }
           >
             🍽️ Kitchen Board
           </button>
           <button
             onClick={() => setBoardType('bar')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              boardType === 'bar'
-                ? 'bg-blue-500 text-white shadow-lg'
-                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
-            }`}
+            className="px-6 py-3 rounded-lg font-medium transition-all shadow-lg"
+            style={boardType === 'bar'
+              ? { background: '#3b82f6', color: '#ffffff' }
+              : { background: '#1a1f2e', color: '#b3b7c7', border: '1px solid #2a3142' }
+            }
           >
             🍹 Cafe/Bar Board
           </button>
@@ -231,40 +231,39 @@ function QSRTVDisplay() {
       {/* Kanban Board */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Pending Column */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="rounded-2xl shadow-lg p-6" style={{ background: '#1a1f2e' }}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-gray-900">Pending</h2>
-            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+            <div className="w-4 h-4 rounded-full" style={{ background: '#f59e0b' }}></div>
+            <h2 className="text-xl font-bold" style={{ color: '#e8eaed' }}>Pending</h2>
+            <span className="px-2 py-1 rounded-full text-sm font-medium" style={{ background: 'rgba(245,158,11,0.2)', color: '#f59e0b' }}>
               {getOrdersByStatus('pending').length}
             </span>
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('pending').map(order => (
-              <div key={order.id} className={`border rounded-xl p-4 ${
-                order.queue === 'Kitchen' || order.queue === 'Both' 
-                  ? 'bg-yellow-100 border-yellow-300' 
-                  : 'bg-yellow-100 border-yellow-300'
-              }`}>
+              <div key={order.id} className="border rounded-xl p-4" style={{
+                background: 'rgba(245,158,11,0.1)',
+                borderColor: '#f59e0b'
+              }}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
                   {order.tableNumber && (
-                    <div className="text-xs font-medium text-blue-600">
+                    <div className="text-xs font-medium" style={{ color: '#f59e0b' }}>
                       {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                        order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                        `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
-                  <div className="text-yellow-600 text-xl">⏰</div>
+                  <div className="text-xl" style={{ color: '#f59e0b' }}>⏰</div>
                 </div>
                 <div className="space-y-1">
                   {order.items.slice(0, 2).map((item, idx) => (
-                    <div key={idx} className="text-sm text-gray-600">
+                    <div key={idx} className="text-sm" style={{ color: '#b3b7c7' }}>
                       {item.name} × {item.quantity}
                     </div>
                   ))}
                   {order.items.length > 2 && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs" style={{ color: '#6b7280' }}>
                       +{order.items.length - 2} more items
                     </div>
                   )}
@@ -272,7 +271,7 @@ function QSRTVDisplay() {
               </div>
             ))}
             {getOrdersByStatus('pending').length === 0 && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8" style={{ color: '#6b7280' }}>
                 <div className="text-4xl mb-2">⏰</div>
                 <p className="text-sm">No pending {boardType} orders</p>
               </div>
@@ -281,40 +280,39 @@ function QSRTVDisplay() {
         </div>
 
         {/* Preparing Column */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="rounded-2xl shadow-lg p-6" style={{ background: '#1a1f2e' }}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-gray-900">Preparing</h2>
-            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+            <div className="w-4 h-4 rounded-full" style={{ background: '#3b82f6' }}></div>
+            <h2 className="text-xl font-bold" style={{ color: '#e8eaed' }}>Preparing</h2>
+            <span className="px-2 py-1 rounded-full text-sm font-medium" style={{ background: 'rgba(59,130,246,0.2)', color: '#3b82f6' }}>
               {getOrdersByStatus('preparing').length}
             </span>
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('preparing').map(order => (
-              <div key={order.id} className={`border rounded-xl p-4 ${
-                order.queue === 'Kitchen' || order.queue === 'Both' 
-                  ? 'bg-blue-100 border-blue-300' 
-                  : 'bg-blue-100 border-blue-300'
-              }`}>
+              <div key={order.id} className="border rounded-xl p-4" style={{
+                background: 'rgba(59,130,246,0.1)',
+                borderColor: '#3b82f6'
+              }}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
                   {order.tableNumber && (
-                    <div className="text-xs font-medium text-blue-600">
+                    <div className="text-xs font-medium" style={{ color: '#3b82f6' }}>
                       {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                        order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                        `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
-                  <div className="text-blue-600 text-xl">👨‍🍳</div>
+                  <div className="text-xl" style={{ color: '#3b82f6' }}>👨‍🍳</div>
                 </div>
                 <div className="space-y-1">
                   {order.items.slice(0, 2).map((item, idx) => (
-                    <div key={idx} className="text-sm text-gray-600">
+                    <div key={idx} className="text-sm" style={{ color: '#b3b7c7' }}>
                       {item.name} × {item.quantity}
                     </div>
                   ))}
                   {order.items.length > 2 && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs" style={{ color: '#6b7280' }}>
                       +{order.items.length - 2} more items
                     </div>
                   )}
@@ -322,7 +320,7 @@ function QSRTVDisplay() {
               </div>
             ))}
             {getOrdersByStatus('preparing').length === 0 && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8" style={{ color: '#6b7280' }}>
                 <div className="text-4xl mb-2">👨‍🍳</div>
                 <p className="text-sm">No {boardType} orders preparing</p>
               </div>
@@ -331,40 +329,39 @@ function QSRTVDisplay() {
         </div>
 
         {/* Ready Column */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="rounded-2xl shadow-lg p-6" style={{ background: '#1a1f2e' }}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-gray-900">Ready</h2>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+            <div className="w-4 h-4 rounded-full" style={{ background: '#10b981' }}></div>
+            <h2 className="text-xl font-bold" style={{ color: '#e8eaed' }}>Ready</h2>
+            <span className="px-2 py-1 rounded-full text-sm font-medium" style={{ background: 'rgba(16,185,129,0.2)', color: '#10b981' }}>
               {getOrdersByStatus('ready').length}
             </span>
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('ready').map(order => (
-              <div key={order.id} className={`border rounded-xl p-4 ${
-                order.queue === 'Kitchen' || order.queue === 'Both' 
-                  ? 'bg-green-100 border-green-300' 
-                  : 'bg-green-100 border-green-300'
-              }`}>
+              <div key={order.id} className="border rounded-xl p-4" style={{
+                background: 'rgba(16,185,129,0.1)',
+                borderColor: '#10b981'
+              }}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
                   {order.tableNumber && (
-                    <div className="text-xs font-medium text-blue-600">
+                    <div className="text-xs font-medium" style={{ color: '#10b981' }}>
                       {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                        order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                        `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
-                  <div className="text-green-600 text-xl">✅</div>
+                  <div className="text-xl" style={{ color: '#10b981' }}>✅</div>
                 </div>
                 <div className="space-y-1">
                   {order.items.slice(0, 2).map((item, idx) => (
-                    <div key={idx} className="text-sm text-gray-600">
+                    <div key={idx} className="text-sm" style={{ color: '#b3b7c7' }}>
                       {item.name} × {item.quantity}
                     </div>
                   ))}
                   {order.items.length > 2 && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs" style={{ color: '#6b7280' }}>
                       +{order.items.length - 2} more items
                     </div>
                   )}
@@ -372,7 +369,7 @@ function QSRTVDisplay() {
               </div>
             ))}
             {getOrdersByStatus('ready').length === 0 && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8" style={{ color: '#6b7280' }}>
                 <div className="text-4xl mb-2">✅</div>
                 <p className="text-sm">No {boardType} orders ready</p>
               </div>
@@ -381,53 +378,52 @@ function QSRTVDisplay() {
         </div>
 
         {/* Delivered Column */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="rounded-2xl shadow-lg p-6" style={{ background: '#1a1f2e' }}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-gray-900">Delivered</h2>
-            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm font-medium">
+            <div className="w-4 h-4 rounded-full" style={{ background: '#8b5cf6' }}></div>
+            <h2 className="text-xl font-bold" style={{ color: '#e8eaed' }}>Delivered</h2>
+            <span className="px-2 py-1 rounded-full text-sm font-medium" style={{ background: 'rgba(139,92,246,0.2)', color: '#8b5cf6' }}>
               {getOrdersByStatus('delivered').length}
             </span>
           </div>
           <div className="space-y-4">
             {getOrdersByStatus('delivered').map(order => (
-              <div key={order.id} className={`border rounded-xl p-4 ${
-                order.queue === 'Kitchen' || order.queue === 'Both' 
-                  ? 'bg-purple-100 border-purple-300' 
-                  : 'bg-purple-100 border-purple-300'
-              }`}>
+              <div key={order.id} className="border rounded-xl p-4" style={{
+                background: 'rgba(139,92,246,0.1)',
+                borderColor: '#8b5cf6'
+              }}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
+                  <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
                   {order.tableNumber && (
-                    <div className="text-xs font-medium text-blue-600">
+                    <div className="text-xs font-medium" style={{ color: '#8b5cf6' }}>
                       {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                        order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                        `🏷️ Table ${order.tableNumber}`}
                     </div>
                   )}
-                  <div className="text-purple-600 text-xl">🎉</div>
+                  <div className="text-xl" style={{ color: '#8b5cf6' }}>🎉</div>
                 </div>
                 <div className="space-y-1">
                   {order.items.slice(0, 2).map((item, idx) => (
-                    <div key={idx} className="text-sm text-gray-600">
+                    <div key={idx} className="text-sm" style={{ color: '#b3b7c7' }}>
                       {item.name} × {item.quantity}
                     </div>
                   ))}
                   {order.items.length > 2 && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs" style={{ color: '#6b7280' }}>
                       +{order.items.length - 2} more items
                     </div>
                   )}
                 </div>
                 {order.deliveredAt && (
-                  <div className="text-xs text-purple-600 mt-2">
+                  <div className="text-xs mt-2" style={{ color: '#8b5cf6' }}>
                     Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                   </div>
                 )}
               </div>
             ))}
             {getOrdersByStatus('delivered').length === 0 && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8" style={{ color: '#6b7280' }}>
                 <div className="text-4xl mb-2">🎉</div>
                 <p className="text-sm">No delivered {boardType} orders</p>
               </div>
@@ -436,9 +432,9 @@ function QSRTVDisplay() {
         </div>
       </div>
 
-      <div className="fixed bottom-8 right-8 flex items-center gap-3 bg-white px-6 py-3 rounded-full shadow-lg">
-        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-        <span className="text-gray-700 font-medium">Live Updates</span>
+      <div className="fixed bottom-8 right-8 flex items-center gap-3 px-6 py-3 rounded-full shadow-lg" style={{ background: '#1a1f2e' }}>
+        <div className="w-3 h-3 rounded-full animate-pulse" style={{ background: '#10b981' }}></div>
+        <span className="font-medium" style={{ color: '#e8eaed' }}>Live Updates</span>
       </div>
     </div>
   );
