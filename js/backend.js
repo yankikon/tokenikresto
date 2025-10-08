@@ -1465,12 +1465,12 @@ function QSRBackend() {
                       
                       return (
                         <div>
-                          <h2 className="text-2xl font-bold text-gray-900 mb-6">Pending Billing Orders</h2>
+                          <h2 className="text-2xl font-bold mb-6" style={{ color: '#e8eaed' }}>Pending Billing Orders</h2>
                           
                           {pendingBillingOrders.length === 0 ? (
                             <div className="text-center py-12">
-                              <p className="text-gray-500 text-lg">No pending billing orders</p>
-                              <p className="text-gray-400 text-sm">Delivered orders waiting for billing will appear here</p>
+                              <p className="text-lg" style={{ color: '#b3b7c7' }}>No pending billing orders</p>
+                              <p className="text-sm" style={{ color: '#6b7280' }}>Delivered orders waiting for billing will appear here</p>
                             </div>
                           ) : (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1485,8 +1485,8 @@ function QSRBackend() {
                                 </div>
                                 <div className="space-y-3">
                                   {kitchenOrders.length === 0 ? (
-                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
-                                      <p className="text-gray-400">No kitchen orders</p>
+                                    <div className="text-center py-8 rounded-lg" style={{ background: '#1e2330' }}>
+                                      <p style={{ color: '#6b7280' }}>No kitchen orders</p>
                                     </div>
                                   ) : (
                                     kitchenOrders.map(order => (
@@ -1542,17 +1542,17 @@ function QSRBackend() {
                               
                               {/* Bar Pending Billing - Right Column */}
                               <div>
-                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
-                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍹 Pending Cafe/Bar Orders</h3>
+                                <div className="border rounded-lg p-4 mb-4" style={{ background: 'linear-gradient(to right, rgba(59,130,246,0.2), rgba(59,130,246,0.1))', borderColor: '#3b82f6' }}>
+                                  <h3 className="text-xl font-bold mb-2" style={{ color: '#e8eaed' }}>🍹 Pending Cafe/Bar Orders</h3>
                                   <div className="flex justify-between items-center">
-                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                    <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
+                                    <span className="text-lg font-semibold" style={{ color: '#b3b7c7' }}>Total Amount:</span>
+                                    <span className="text-2xl font-bold" style={{ color: '#3b82f6' }}>₹{barTotal}</span>
                                   </div>
                                 </div>
                                 <div className="space-y-3">
                                   {barOrders.length === 0 ? (
-                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
-                                      <p className="text-gray-400">No bar orders</p>
+                                    <div className="text-center py-8 rounded-lg" style={{ background: '#1e2330' }}>
+                                      <p style={{ color: '#6b7280' }}>No bar orders</p>
                                     </div>
                                   ) : (
                                     barOrders.map(order => (
@@ -1642,28 +1642,28 @@ function QSRBackend() {
                       
                       return (
                         <div>
-                          <h2 className="text-2xl font-bold text-gray-900 mb-6">Completed Billing Orders</h2>
+                          <h2 className="text-2xl font-bold mb-6" style={{ color: '#e8eaed' }}>Completed Billing Orders</h2>
                           
                           {completedBillingOrders.length === 0 ? (
                             <div className="text-center py-12">
-                              <p className="text-gray-500 text-lg">No completed billing orders yet</p>
-                              <p className="text-gray-400 text-sm">Orders with completed billing will appear here</p>
+                              <p className="text-lg" style={{ color: '#b3b7c7' }}>No completed billing orders yet</p>
+                              <p className="text-sm" style={{ color: '#6b7280' }}>Orders with completed billing will appear here</p>
                             </div>
                           ) : (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Kitchen Completed Billing - Left Column */}
                               <div>
-                                <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
-                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍽️ Completed Kitchen Orders</h3>
+                                <div className="border rounded-lg p-4 mb-4" style={{ background: 'linear-gradient(to right, rgba(236,72,153,0.2), rgba(236,72,153,0.1))', borderColor: '#ec4899' }}>
+                                  <h3 className="text-xl font-bold mb-2" style={{ color: '#e8eaed' }}>🍽️ Completed Kitchen Orders</h3>
                                   <div className="flex justify-between items-center">
-                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                    <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
+                                    <span className="text-lg font-semibold" style={{ color: '#b3b7c7' }}>Total Amount:</span>
+                                    <span className="text-2xl font-bold" style={{ color: '#ec4899' }}>₹{kitchenTotal}</span>
                                   </div>
                                 </div>
                                 <div className="space-y-3">
                                   {kitchenOrders.length === 0 ? (
-                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
-                                      <p className="text-gray-400">No kitchen orders</p>
+                                    <div className="text-center py-8 rounded-lg" style={{ background: '#1e2330' }}>
+                                      <p style={{ color: '#6b7280' }}>No kitchen orders</p>
                                     </div>
                                   ) : (
                                     kitchenOrders.map(order => (
@@ -1718,17 +1718,17 @@ function QSRBackend() {
                               
                               {/* Bar Completed Billing - Right Column */}
                               <div>
-                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
-                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍹 Completed Cafe/Bar Orders</h3>
+                                <div className="border rounded-lg p-4 mb-4" style={{ background: 'linear-gradient(to right, rgba(59,130,246,0.2), rgba(59,130,246,0.1))', borderColor: '#3b82f6' }}>
+                                  <h3 className="text-xl font-bold mb-2" style={{ color: '#e8eaed' }}>🍹 Completed Cafe/Bar Orders</h3>
                                   <div className="flex justify-between items-center">
-                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                    <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
+                                    <span className="text-lg font-semibold" style={{ color: '#b3b7c7' }}>Total Amount:</span>
+                                    <span className="text-2xl font-bold" style={{ color: '#3b82f6' }}>₹{barTotal}</span>
                                   </div>
                                 </div>
                                 <div className="space-y-3">
                                   {barOrders.length === 0 ? (
-                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
-                                      <p className="text-gray-400">No bar orders</p>
+                                    <div className="text-center py-8 rounded-lg" style={{ background: '#1e2330' }}>
+                                      <p style={{ color: '#6b7280' }}>No bar orders</p>
                                     </div>
                                   ) : (
                                     barOrders.map(order => (
