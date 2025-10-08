@@ -1437,19 +1437,23 @@ function QSRBackend() {
                               <p className="text-gray-400 text-sm">Delivered orders waiting for billing will appear here</p>
                             </div>
                           ) : (
-                            <div className="space-y-6">
-                              {/* Kitchen Pending Billing */}
-                              {kitchenOrders.length > 0 && (
-                                <div>
-                                  <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Pending Kitchen Orders</h3>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                      <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
-                                    </div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              {/* Kitchen Pending Billing - Left Column */}
+                              <div>
+                                <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
+                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍽️ Pending Kitchen Orders</h3>
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                                    <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
                                   </div>
-                                  <div className="space-y-3">
-                                    {kitchenOrders.map(order => (
+                                </div>
+                                <div className="space-y-3">
+                                  {kitchenOrders.length === 0 ? (
+                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                                      <p className="text-gray-400">No kitchen orders</p>
+                                    </div>
+                                  ) : (
+                                    kitchenOrders.map(order => (
                                       <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
@@ -1467,11 +1471,6 @@ function QSRBackend() {
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                                               </div>
                                             )}
-                                            {order.queue && (
-                                              <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-green-100 text-green-800">
-                                                {order.queue} Queue
-                                              </div>
-                                            )}
                                           </div>
                                         </div>
                                         
@@ -1500,23 +1499,27 @@ function QSRBackend() {
                                           </button>
                                         </div>
                                       </div>
-                                    ))}
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Bar Pending Billing - Right Column */}
+                              <div>
+                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
+                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍹 Pending Cafe/Bar Orders</h3>
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                                    <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
                                   </div>
                                 </div>
-                              )}
-                              
-                              {/* Bar Pending Billing */}
-                              {barOrders.length > 0 && (
-                                <div>
-                                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Pending Cafe/Bar Orders</h3>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                      <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
+                                <div className="space-y-3">
+                                  {barOrders.length === 0 ? (
+                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                                      <p className="text-gray-400">No bar orders</p>
                                     </div>
-                                  </div>
-                                  <div className="space-y-3">
-                                    {barOrders.map(order => (
+                                  ) : (
+                                    barOrders.map(order => (
                                       <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
@@ -1534,11 +1537,6 @@ function QSRBackend() {
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                                               </div>
                                             )}
-                                            {order.queue && (
-                                              <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-blue-100 text-blue-800">
-                                                {order.queue} Queue
-                                              </div>
-                                            )}
                                           </div>
                                         </div>
                                         
@@ -1567,10 +1565,10 @@ function QSRBackend() {
                                           </button>
                                         </div>
                                       </div>
-                                    ))}
-                                  </div>
+                                    ))
+                                  )}
                                 </div>
-                              )}
+                              </div>
                             </div>
                           )}
                         </div>
@@ -1616,19 +1614,23 @@ function QSRBackend() {
                               <p className="text-gray-400 text-sm">Orders with completed billing will appear here</p>
                             </div>
                           ) : (
-                            <div className="space-y-6">
-                              {/* Kitchen Completed Billing */}
-                              {kitchenOrders.length > 0 && (
-                                <div>
-                                  <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Completed Kitchen Orders</h3>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                      <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
-                                    </div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              {/* Kitchen Completed Billing - Left Column */}
+                              <div>
+                                <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
+                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍽️ Completed Kitchen Orders</h3>
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                                    <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
                                   </div>
-                                  <div className="space-y-3">
-                                    {kitchenOrders.map(order => (
+                                </div>
+                                <div className="space-y-3">
+                                  {kitchenOrders.length === 0 ? (
+                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                                      <p className="text-gray-400">No kitchen orders</p>
+                                    </div>
+                                  ) : (
+                                    kitchenOrders.map(order => (
                                       <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
@@ -1639,21 +1641,16 @@ function QSRBackend() {
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
-              </div>
-            )}
+                                              </div>
+                                            )}
                                             {order.deliveredAt && (
                                               <div className="text-xs text-gray-400">
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
-          </div>
-        )}
+                                              </div>
+                                            )}
                                             {order.billingCompletedAt && (
                                               <div className="text-xs text-gray-400">
                                                 Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
-              </div>
-            )}
-                                            {order.queue && (
-                                              <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-green-100 text-green-800">
-                                                {order.queue} Queue
                                               </div>
                                             )}
                                           </div>
@@ -1676,25 +1673,29 @@ function QSRBackend() {
                                           <p className="text-green-800 font-medium text-center">
                                             ✅ Billing Completed
                                           </p>
-                  </div>
-                </div>
-                                    ))}
+                                        </div>
+                                      </div>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Bar Completed Billing - Right Column */}
+                              <div>
+                                <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
+                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍹 Completed Cafe/Bar Orders</h3>
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
+                                    <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
                                   </div>
                                 </div>
-                              )}
-                              
-                              {/* Bar Completed Billing */}
-                              {barOrders.length > 0 && (
-                        <div>
-                                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Completed Cafe/Bar Orders</h3>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                      <span className="text-2xl font-bold text-blue-600">₹{barTotal}</span>
-                        </div>
-                        </div>
-                                  <div className="space-y-3">
-                                    {barOrders.map(order => (
+                                <div className="space-y-3">
+                                  {barOrders.length === 0 ? (
+                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                                      <p className="text-gray-400">No bar orders</p>
+                                    </div>
+                                  ) : (
+                                    barOrders.map(order => (
                                       <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
@@ -1705,26 +1706,21 @@ function QSRBackend() {
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
-                      </div>
+                                              </div>
                                             )}
                                             {order.deliveredAt && (
                                               <div className="text-xs text-gray-400">
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
-                          </div>
+                                              </div>
                                             )}
                                             {order.billingCompletedAt && (
                                               <div className="text-xs text-gray-400">
                                                 Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
-                          </div>
-                        )}
-                                            {order.queue && (
-                                              <div className="text-xs px-2 py-1 rounded-full inline-block mt-1 bg-blue-100 text-blue-800">
-                                                {order.queue} Queue
                                               </div>
                                             )}
                                           </div>
-                      </div>
-                      
+                                        </div>
+                                        
                                         <div className="bg-white rounded-lg p-4 mb-4">
                                           {order.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-lg py-2">
@@ -1733,22 +1729,22 @@ function QSRBackend() {
                                             </div>
                                           ))}
                                           <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                          <span>Total</span>
+                                            <span>Total</span>
                                             <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
-                        </div>
-                      </div>
+                                          </div>
+                                        </div>
                                         
                                         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                                           <p className="text-green-800 font-medium text-center">
                                             ✅ Billing Completed
                                           </p>
                                         </div>
-                    </div>
-                  ))}
-                                  </div>
-                </div>
-              )}
-            </div>
+                                      </div>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+                            </div>
                           )}
                         </div>
                       );
