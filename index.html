@@ -112,25 +112,25 @@
         window.signOutUser = signOutUser;
     </script>
 </head>
-<body class="bg-black min-h-screen">
+<body class="min-h-screen" style="background: #0f1419;">
     <!-- Sign In Card -->
     <div id="signin-card" class="min-h-screen flex items-center justify-center p-8" style="display: none;">
-        <div class="bg-white rounded-3xl shadow-2xl p-12 w-full max-w-md mx-auto">
+        <div class="rounded-3xl shadow-2xl p-12 w-full max-w-md mx-auto" style="background: #1a1f2e;">
             <div class="text-center">
                 <!-- Logo -->
                 <div class="flex justify-center mb-8">
-                    <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center p-3">
+                    <div class="w-20 h-20 rounded-lg flex items-center justify-center p-3" style="background: #1e2330;">
                         <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" class="w-full h-full object-contain" />
                     </div>
                 </div>
                 
                 <!-- App Name -->
-                <h2 class="text-2xl font-bold text-black mb-2">Tokenik</h2>
-                <p class="text-gray-500 mb-8">Restaurant Token Management</p>
+                <h2 class="text-2xl font-bold mb-2" style="color: #e8eaed;">Tokenik</h2>
+                <p class="mb-8" style="color: #b3b7c7;">Restaurant Token Management</p>
                 
                 <!-- Sign In Button -->
                 <button onclick="signInWithGoogle()" class="w-full">
-                    <div class="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-200 flex items-center justify-center gap-3">
+                    <div class="px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-200 flex items-center justify-center gap-3" style="background: #10b981; color: #ffffff;">
                         <svg class="w-6 h-6" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -142,28 +142,28 @@
                 </button>
                 
                 <!-- Error Message -->
-                <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4 text-sm">
+                <div id="error-message" class="hidden border px-4 py-3 rounded-lg mt-4 text-sm" style="background: rgba(239,68,68,0.1); border-color: #ef4444; color: #ef4444;">
                     Error signing in. Please try again.
                 </div>
                 
                 <!-- Features -->
                 <div class="mt-8 text-left">
-                    <h3 class="text-gray-800 font-semibold mb-4">Features:</h3>
-                    <ul class="text-sm text-gray-600 space-y-2">
+                    <h3 class="font-semibold mb-4" style="color: #e8eaed;">Features:</h3>
+                    <ul class="text-sm space-y-2" style="color: #b3b7c7;">
                         <li class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 rounded-full" style="background: #10b981;"></div>
                             Order management with Kitchen/Cafe/Bar separation
                         </li>
                         <li class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 rounded-full" style="background: #10b981;"></div>
                             Real-time TV display for order tracking
                         </li>
                         <li class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 rounded-full" style="background: #10b981;"></div>
                             Sequential order numbering system
                         </li>
                         <li class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 rounded-full" style="background: #10b981;"></div>
                             Secure multi-user support
                         </li>
                     </ul>
@@ -176,11 +176,11 @@
     <div id="dashboard" class="min-h-screen p-8" style="display: none;">
         <!-- Header -->
         <div class="max-w-6xl mx-auto">
-            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <div class="rounded-2xl shadow-lg p-8 mb-8" style="background: #1a1f2e;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-4xl font-bold text-black mb-2">Tokenik</h1>
-                        <p class="text-gray-600">Restaurant Token Management System</p>
+                        <h1 class="text-4xl font-bold mb-2" style="color: #e8eaed;">Tokenik</h1>
+                        <p style="color: #b3b7c7;">Restaurant Token Management System</p>
                     </div>
                     <div class="flex items-center gap-4">
                         <div id="user-info" class="flex items-center gap-2">
@@ -188,7 +188,8 @@
                         </div>
                         <button
                             onclick="signOutUser()"
-                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                            class="px-4 py-2 rounded-lg font-medium transition-colors"
+                            style="background: #1e2330; color: #e8eaed;"
                         >
                             Sign Out
                         </button>
@@ -199,32 +200,32 @@
             <!-- Modules Grid -->
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Manager Dashboard -->
-                <a href="backend.html" class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow group">
+                <a href="backend.html" class="rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow group" style="background: #1a1f2e;">
                     <div class="text-center">
-                        <div class="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-gray-800 transition-colors">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-colors" style="background: #10b981;">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
                         </div>
-                        <h2 class="text-2xl font-bold text-black mb-3">Manager Dashboard</h2>
-                        <p class="text-gray-600 mb-6">Take orders, manage menu, and update order status</p>
-                        <div class="bg-black text-white px-6 py-3 rounded-lg font-medium inline-block group-hover:bg-gray-800 transition-colors">
+                        <h2 class="text-2xl font-bold mb-3" style="color: #e8eaed;">Manager Dashboard</h2>
+                        <p class="mb-6" style="color: #b3b7c7;">Take orders, manage menu, and update order status</p>
+                        <div class="px-6 py-3 rounded-lg font-medium inline-block transition-colors" style="background: #10b981; color: #ffffff;">
                             Open Dashboard
                         </div>
                     </div>
                 </a>
 
                 <!-- TV Display -->
-                <a href="frontend.html" target="_blank" class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow group">
+                <a href="frontend.html" target="_blank" class="rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow group" style="background: #1a1f2e;">
                     <div class="text-center">
-                        <div class="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-gray-800 transition-colors">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-colors" style="background: #3b82f6;">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h2 class="text-2xl font-bold text-black mb-3">TV Display</h2>
-                        <p class="text-gray-600 mb-6">Kitchen/Customer TV, tablet, or monitor display</p>
-                        <div class="bg-black text-white px-6 py-3 rounded-lg font-medium inline-block group-hover:bg-gray-800 transition-colors">
+                        <h2 class="text-2xl font-bold mb-3" style="color: #e8eaed;">TV Display</h2>
+                        <p class="mb-6" style="color: #b3b7c7;">Kitchen/Customer TV, tablet, or monitor display</p>
+                        <div class="px-6 py-3 rounded-lg font-medium inline-block transition-colors" style="background: #3b82f6; color: #ffffff;">
                             Open Display
                         </div>
                     </div>
@@ -232,12 +233,12 @@
             </div>
 
             <!-- Setup Instructions -->
-            <div class="mt-12 bg-white rounded-2xl shadow-lg p-8">
-                <h3 class="text-xl font-bold text-black mb-4">Setup Instructions</h3>
+            <div class="mt-12 rounded-2xl shadow-lg p-8" style="background: #1a1f2e;">
+                <h3 class="text-xl font-bold mb-4" style="color: #e8eaed;">Setup Instructions</h3>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <h4 class="font-semibold text-black mb-2">Manager Dashboard</h4>
-                        <ul class="text-sm text-gray-600 space-y-1">
+                        <h4 class="font-semibold mb-2" style="color: #e8eaed;">Manager Dashboard</h4>
+                        <ul class="text-sm space-y-1" style="color: #b3b7c7;">
                             <li>• Take orders with Kitchen/Cafe/Bar separation</li>
                             <li>• Manage menu items and categories</li>
                             <li>• Update order status in real-time</li>
@@ -245,8 +246,8 @@
                         </ul>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-black mb-2">TV Display</h4>
-                        <ul class="text-sm text-gray-600 space-y-1">
+                        <h4 class="font-semibold mb-2" style="color: #e8eaed;">TV Display</h4>
+                        <ul class="text-sm space-y-1" style="color: #b3b7c7;">
                             <li>• Real-time order status board</li>
                             <li>• Kanban-style columns</li>
                             <li>• Separate Kitchen and Cafe/Bar views</li>

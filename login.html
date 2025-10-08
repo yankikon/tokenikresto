@@ -75,21 +75,22 @@
         window.signInWithGoogle = signInWithGoogle;
     </script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+<body class="min-h-screen flex items-center justify-center p-4" style="background: #0f1419;">
+    <div class="rounded-2xl shadow-2xl p-8 w-full max-w-md" style="background: #1a1f2e;">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">🍛 TOKENIK</h1>
-            <p class="text-lg text-gray-600">Restaurant Token App</p>
-            <p class="text-sm text-gray-500 mt-2">Sign in to manage your restaurant orders</p>
+            <h1 class="text-4xl font-bold mb-2" style="color: #e8eaed;">🍛 TOKENIK</h1>
+            <p class="text-lg" style="color: #b3b7c7;">Restaurant Token App</p>
+            <p class="text-sm mt-2" style="color: #b3b7c7;">Sign in to manage your restaurant orders</p>
         </div>
 
-        <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div id="error-message" class="hidden border px-4 py-3 rounded-lg mb-6" style="background: rgba(239,68,68,0.1); border-color: #ef4444; color: #ef4444;">
             Error signing in. Please try again.
         </div>
 
         <button
             onclick="signInWithGoogle()"
-            class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 rounded-lg px-6 py-4 text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
+            class="w-full flex items-center justify-center gap-3 border-2 rounded-lg px-6 py-4 font-medium transition-all shadow-sm"
+            style="background: #10b981; border-color: #10b981; color: #ffffff;"
         >
             <svg class="w-6 h-6" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -101,15 +102,15 @@
         </button>
 
         <div class="mt-8 text-center">
-            <p class="text-sm text-gray-500">
+            <p class="text-sm" style="color: #b3b7c7;">
                 By signing in, you agree to use this application responsibly.
             </p>
         </div>
 
-        <div class="mt-6 pt-6 border-t border-gray-200">
+        <div class="mt-6 pt-6" style="border-top: 1px solid #2a3142;">
             <div class="text-center">
-                <h3 class="text-sm font-medium text-gray-900 mb-2">Features:</h3>
-                <ul class="text-xs text-gray-600 space-y-1">
+                <h3 class="text-sm font-medium mb-2" style="color: #e8eaed;">Features:</h3>
+                <ul class="text-xs space-y-1" style="color: #b3b7c7;">
                     <li>• Manage Kitchen & Bar orders separately</li>
                     <li>• Real-time order status tracking</li>
                     <li>• Sequential order numbering</li>

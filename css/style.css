@@ -17,22 +17,48 @@
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Custom scrollbar */
+/* Custom dark theme scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #1a1f2e;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #2a3142;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #10b981;
+}
+
+/* Body default background */
+body {
+  background: #0f1419;
+  color: #e8eaed;
+}
+
+/* Input fields styling */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  background: #1e2330 !important;
+  color: #e8eaed !important;
+  border-color: #2a3142 !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #10b981 !important;
+  ring-color: #10b981 !important;
 }
 
 /* Print styles for TV display */

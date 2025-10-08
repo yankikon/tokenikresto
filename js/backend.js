@@ -814,10 +814,10 @@ function QSRBackend() {
   // Show loading screen while authenticating
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f1419' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#10b981' }}></div>
+          <p style={{ color: '#b3b7c7' }}>Loading...</p>
         </div>
       </div>
     );
@@ -826,10 +826,10 @@ function QSRBackend() {
   // Show login screen if not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0f1419' }}>
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Please sign in to continue</p>
-          <a href="login.html" className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600">
+          <p className="mb-4" style={{ color: '#b3b7c7' }}>Please sign in to continue</p>
+          <a href="login.html" className="px-6 py-2 rounded-lg inline-block" style={{ background: '#10b981', color: '#ffffff' }}>
             Go to Login
           </a>
         </div>
@@ -838,18 +838,18 @@ function QSRBackend() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen" style={{ background: '#0f1419' }}>
+      <div style={{ background: '#1a1f2e', borderBottom: '1px solid #2a3142' }} className="shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Pikonik Logo */}
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center p-1">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center p-1" style={{ background: '#1e2330' }}>
                 <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Manager Dashboard</h1>
-                <p className="text-sm text-gray-500">TOKENIK (RESTAURANT TOKEN APP)</p>
+                <h1 className="text-2xl font-bold" style={{ color: '#e8eaed' }}>Manager Dashboard</h1>
+                <p className="text-sm" style={{ color: '#b3b7c7' }}>TOKENIK (RESTAURANT TOKEN APP)</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -857,30 +857,36 @@ function QSRBackend() {
                 {user.photoURL && (
                   <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full" />
                 )}
-                <span className="text-sm text-gray-700">{user.displayName || user.email}</span>
+                <span className="text-sm" style={{ color: '#e8eaed' }}>{user.displayName || user.email}</span>
               </div>
               <button
                 onClick={handleSignOut}
-                className="text-orange-600 hover:text-orange-700 font-medium"
+                className="font-medium"
+                style={{ color: '#10b981' }}
+                onMouseEnter={(e) => e.target.style.color = '#059669'}
+                onMouseLeave={(e) => e.target.style.color = '#10b981'}
               >
                 Sign Out
               </button>
-              <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">← Back to Home</a>
+              <a href="index.html" className="font-medium" style={{ color: '#10b981' }}>← Back to Home</a>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white border-b border-gray-200">
+      <div style={{ background: '#1a1f2e', borderBottom: '1px solid #2a3142' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-1">
             <button
               onClick={() => setActiveTab('orders')}
               className={`px-6 py-3 font-medium transition-all ${
                 activeTab === 'orders'
-                  ? 'text-orange-600 border-b-2 border-orange-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2'
+                  : ''
               }`}
+              style={activeTab === 'orders' ? { color: '#10b981', borderColor: '#10b981' } : { color: '#b3b7c7' }}
+              onMouseEnter={(e) => { if (activeTab !== 'orders') e.target.style.color = '#e8eaed'; }}
+              onMouseLeave={(e) => { if (activeTab !== 'orders') e.target.style.color = '#b3b7c7'; }}
             >
               Order Management
             </button>
@@ -888,9 +894,12 @@ function QSRBackend() {
               onClick={() => setActiveTab('takeOrder')}
               className={`px-6 py-3 font-medium transition-all ${
                 activeTab === 'takeOrder'
-                  ? 'text-orange-600 border-b-2 border-orange-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2'
+                  : ''
               }`}
+              style={activeTab === 'takeOrder' ? { color: '#10b981', borderColor: '#10b981' } : { color: '#b3b7c7' }}
+              onMouseEnter={(e) => { if (activeTab !== 'takeOrder') e.target.style.color = '#e8eaed'; }}
+              onMouseLeave={(e) => { if (activeTab !== 'takeOrder') e.target.style.color = '#b3b7c7'; }}
             >
               Take Order
             </button>
@@ -898,9 +907,12 @@ function QSRBackend() {
               onClick={() => setActiveTab('menu')}
               className={`px-6 py-3 font-medium transition-all ${
                 activeTab === 'menu'
-                  ? 'text-orange-600 border-b-2 border-orange-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2'
+                  : ''
               }`}
+              style={activeTab === 'menu' ? { color: '#10b981', borderColor: '#10b981' } : { color: '#b3b7c7' }}
+              onMouseEnter={(e) => { if (activeTab !== 'menu') e.target.style.color = '#e8eaed'; }}
+              onMouseLeave={(e) => { if (activeTab !== 'menu') e.target.style.color = '#b3b7c7'; }}
             >
               Menu Management
             </button>
@@ -912,9 +924,9 @@ function QSRBackend() {
         {activeTab === 'orders' && (
           <div className="space-y-6">
             {/* Order Type Buttons */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="rounded-lg shadow-sm p-6" style={{ background: '#1a1f2e' }}>
               <div className="flex items-center gap-4">
-                <label className="text-lg font-semibold text-gray-900">
+                <label className="text-lg font-semibold" style={{ color: '#e8eaed' }}>
                   Order Type:
                 </label>
                 <div className="flex gap-2">
@@ -926,9 +938,13 @@ function QSRBackend() {
                     }}
                     className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${
                       orderMainTab === 'active'
-                        ? 'bg-orange-500 text-white border-orange-500 shadow-md'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                        ? 'shadow-md'
+                        : ''
                     }`}
+                    style={orderMainTab === 'active' 
+                      ? { background: '#10b981', color: '#ffffff', borderColor: '#10b981' }
+                      : { background: '#1e2330', color: '#e8eaed', borderColor: '#2a3142' }
+                    }
                   >
                     📋 Active Orders
                 </button>
@@ -940,9 +956,13 @@ function QSRBackend() {
                     }}
                     className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${
                       orderMainTab === 'completed'
-                        ? 'bg-green-500 text-white border-green-500 shadow-md'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                        ? 'shadow-md'
+                        : ''
                     }`}
+                    style={orderMainTab === 'completed' 
+                      ? { background: '#10b981', color: '#ffffff', borderColor: '#10b981' }
+                      : { background: '#1e2330', color: '#e8eaed', borderColor: '#2a3142' }
+                    }
                   >
                     ✅ Completed Orders
                 </button>
@@ -952,16 +972,16 @@ function QSRBackend() {
 
             {/* Order Summary Statistics */}
             {orderMainTab === 'active' && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="rounded-lg shadow-sm p-6" style={{ background: '#1a1f2e' }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Order Summary</h3>
+                  <h3 className="text-lg font-semibold" style={{ color: '#e8eaed' }}>Order Summary</h3>
                   <button
                     onClick={() => setStatusFilter('all')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      statusFilter === 'all'
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                    style={statusFilter === 'all'
+                      ? { background: '#10b981', color: '#ffffff' }
+                      : { background: '#1e2330', color: '#b3b7c7' }
+                    }
                   >
                     Show All Orders
                   </button>
@@ -969,55 +989,55 @@ function QSRBackend() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <button
                     onClick={() => setStatusFilter('pending')}
-                    className={`border rounded-lg p-4 text-center transition-all ${
-                      statusFilter === 'pending'
-                        ? 'bg-yellow-500 border-yellow-500 text-white'
-                        : 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'
-                    }`}
+                    className="border rounded-lg p-4 text-center transition-all"
+                    style={statusFilter === 'pending'
+                      ? { background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff' }
+                      : { background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }
+                    }
                   >
-                    <div className={`text-2xl font-bold ${statusFilter === 'pending' ? 'text-white' : 'text-yellow-800'}`}>
+                    <div className="text-2xl font-bold" style={{ color: statusFilter === 'pending' ? '#ffffff' : '#f59e0b' }}>
                       {orders.filter(o => o.status === 'pending' && o.status !== 'delivered').length}
                     </div>
-                    <div className={`text-sm ${statusFilter === 'pending' ? 'text-white' : 'text-yellow-600'}`}>Pending</div>
+                    <div className="text-sm" style={{ color: statusFilter === 'pending' ? '#ffffff' : '#b3b7c7' }}>Pending</div>
                   </button>
                   <button
                     onClick={() => setStatusFilter('preparing')}
-                    className={`border rounded-lg p-4 text-center transition-all ${
-                      statusFilter === 'preparing'
-                        ? 'bg-blue-500 border-blue-500 text-white'
-                        : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                    }`}
+                    className="border rounded-lg p-4 text-center transition-all"
+                    style={statusFilter === 'preparing'
+                      ? { background: '#3b82f6', borderColor: '#3b82f6', color: '#ffffff' }
+                      : { background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }
+                    }
                   >
-                    <div className={`text-2xl font-bold ${statusFilter === 'preparing' ? 'text-white' : 'text-blue-800'}`}>
+                    <div className="text-2xl font-bold" style={{ color: statusFilter === 'preparing' ? '#ffffff' : '#3b82f6' }}>
                       {orders.filter(o => o.status === 'preparing' && o.status !== 'delivered').length}
                     </div>
-                    <div className={`text-sm ${statusFilter === 'preparing' ? 'text-white' : 'text-blue-600'}`}>Preparing</div>
+                    <div className="text-sm" style={{ color: statusFilter === 'preparing' ? '#ffffff' : '#b3b7c7' }}>Preparing</div>
                   </button>
                   <button
                     onClick={() => setStatusFilter('ready')}
-                    className={`border rounded-lg p-4 text-center transition-all ${
-                      statusFilter === 'ready'
-                        ? 'bg-green-500 border-green-500 text-white'
-                        : 'bg-green-50 border-green-200 hover:bg-green-100'
-                    }`}
+                    className="border rounded-lg p-4 text-center transition-all"
+                    style={statusFilter === 'ready'
+                      ? { background: '#10b981', borderColor: '#10b981', color: '#ffffff' }
+                      : { background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }
+                    }
                   >
-                    <div className={`text-2xl font-bold ${statusFilter === 'ready' ? 'text-white' : 'text-green-800'}`}>
+                    <div className="text-2xl font-bold" style={{ color: statusFilter === 'ready' ? '#ffffff' : '#10b981' }}>
                       {orders.filter(o => o.status === 'ready' && o.status !== 'delivered').length}
                     </div>
-                    <div className={`text-sm ${statusFilter === 'ready' ? 'text-white' : 'text-green-600'}`}>Ready</div>
+                    <div className="text-sm" style={{ color: statusFilter === 'ready' ? '#ffffff' : '#b3b7c7' }}>Ready</div>
                   </button>
                   <button
                     onClick={() => setStatusFilter('delivered')}
-                    className={`border rounded-lg p-4 text-center transition-all ${
-                      statusFilter === 'delivered'
-                        ? 'bg-purple-500 border-purple-500 text-white'
-                        : 'bg-purple-50 border-purple-200 hover:bg-purple-100'
-                    }`}
+                    className="border rounded-lg p-4 text-center transition-all"
+                    style={statusFilter === 'delivered'
+                      ? { background: '#8b5cf6', borderColor: '#8b5cf6', color: '#ffffff' }
+                      : { background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }
+                    }
                   >
-                    <div className={`text-2xl font-bold ${statusFilter === 'delivered' ? 'text-white' : 'text-purple-800'}`}>
+                    <div className="text-2xl font-bold" style={{ color: statusFilter === 'delivered' ? '#ffffff' : '#8b5cf6' }}>
                       {orders.filter(o => o.status === 'delivered').length}
                     </div>
-                    <div className={`text-sm ${statusFilter === 'delivered' ? 'text-white' : 'text-purple-600'}`}>Delivered</div>
+                    <div className="text-sm" style={{ color: statusFilter === 'delivered' ? '#ffffff' : '#b3b7c7' }}>Delivered</div>
                   </button>
                 </div>
               </div>
@@ -1025,55 +1045,55 @@ function QSRBackend() {
 
             {orderMainTab === 'completed' && (
               <div>
-                <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing Summary</h3>
+                <div className="rounded-lg shadow-sm p-6 mb-4" style={{ background: '#1a1f2e' }}>
+                  <h3 className="text-lg font-semibold mb-4" style={{ color: '#e8eaed' }}>Billing Summary</h3>
                   <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => {
                       setOrderSubTab('pending');
                       setOrderMainTab('completed');
                     }}
-                    className={`border rounded-lg p-4 text-center transition-all ${
-                      orderSubTab === 'pending' && orderMainTab === 'completed'
-                        ? 'bg-yellow-500 border-yellow-500 text-white'
-                        : 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'
-                    }`}
+                    className="border rounded-lg p-4 text-center transition-all"
+                    style={orderSubTab === 'pending' && orderMainTab === 'completed'
+                      ? { background: '#f59e0b', borderColor: '#f59e0b', color: '#ffffff' }
+                      : { background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }
+                    }
                   >
-                    <div className={`text-2xl font-bold ${orderSubTab === 'pending' && orderMainTab === 'completed' ? 'text-white' : 'text-yellow-800'}`}>
+                    <div className="text-2xl font-bold" style={{ color: orderSubTab === 'pending' && orderMainTab === 'completed' ? '#ffffff' : '#f59e0b' }}>
                       {orders.filter(o => {
                         const orderDate = new Date(o.createdAt || o.date).toDateString();
                         const today = new Date().toDateString();
                         return o.status === 'delivered' && (o.billingStatus === 'pending_billing' || !o.billingStatus) && orderDate === today;
                       }).length}
                     </div>
-                    <div className={`text-sm ${orderSubTab === 'pending' && orderMainTab === 'completed' ? 'text-white' : 'text-yellow-600'}`}>Pending Billing</div>
+                    <div className="text-sm" style={{ color: orderSubTab === 'pending' && orderMainTab === 'completed' ? '#ffffff' : '#b3b7c7' }}>Pending Billing</div>
                   </button>
                   <button
                     onClick={() => {
                       setOrderSubTab('completed');
                       setOrderMainTab('completed');
                     }}
-                    className={`border rounded-lg p-4 text-center transition-all ${
-                      orderSubTab === 'completed' && orderMainTab === 'completed'
-                        ? 'bg-green-500 border-green-500 text-white'
-                        : 'bg-green-50 border-green-200 hover:bg-green-100'
-                    }`}
+                    className="border rounded-lg p-4 text-center transition-all"
+                    style={orderSubTab === 'completed' && orderMainTab === 'completed'
+                      ? { background: '#10b981', borderColor: '#10b981', color: '#ffffff' }
+                      : { background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }
+                    }
                   >
-                    <div className={`text-2xl font-bold ${orderSubTab === 'completed' && orderMainTab === 'completed' ? 'text-white' : 'text-green-800'}`}>
+                    <div className="text-2xl font-bold" style={{ color: orderSubTab === 'completed' && orderMainTab === 'completed' ? '#ffffff' : '#10b981' }}>
                       {orders.filter(o => {
                         const orderDate = new Date(o.createdAt || o.date).toDateString();
                         const today = new Date().toDateString();
                         return o.status === 'delivered' && o.billingStatus === 'billing_completed' && orderDate === today;
                       }).length}
                     </div>
-                    <div className={`text-sm ${orderSubTab === 'completed' && orderMainTab === 'completed' ? 'text-white' : 'text-green-600'}`}>Completed Billing</div>
+                    <div className="text-sm" style={{ color: orderSubTab === 'completed' && orderMainTab === 'completed' ? '#ffffff' : '#b3b7c7' }}>Completed Billing</div>
                   </button>
                 </div>
               </div>
               
               {/* Date Filter Section */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Filter by Date</h3>
+              <div className="rounded-lg shadow-sm p-6 mb-4" style={{ background: '#1a1f2e' }}>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: '#e8eaed' }}>📅 Filter by Date</h3>
                 <div className="flex gap-4 items-center">
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
