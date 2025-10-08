@@ -1096,18 +1096,20 @@ function QSRBackend() {
                 <h3 className="text-lg font-semibold mb-4" style={{ color: '#e8eaed' }}>📅 Filter by Date</h3>
                 <div className="flex gap-4 items-center">
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#b3b7c7' }}>Select Date</label>
                     <input
                       type="date"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border rounded-lg"
+                      style={{ background: '#1e2330', color: '#e8eaed', borderColor: '#2a3142' }}
                     />
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                      className="px-4 py-2 rounded-lg font-medium transition-colors"
+                      style={{ background: '#3b82f6', color: '#ffffff' }}
                     >
                       📅 Today
                     </button>
@@ -1117,14 +1119,16 @@ function QSRBackend() {
                         yesterday.setDate(yesterday.getDate() - 1);
                         setSelectedDate(yesterday.toISOString().split('T')[0]);
                       }}
-                      className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                      className="px-4 py-2 rounded-lg font-medium transition-colors"
+                      style={{ background: '#1e2330', color: '#e8eaed' }}
                     >
                       Yesterday
                     </button>
                     {selectedDate && (
                       <button
                         onClick={() => setSelectedDate('')}
-                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                        className="px-4 py-2 rounded-lg font-medium transition-colors"
+                        style={{ background: '#ef4444', color: '#ffffff' }}
                       >
                         ✕ Clear
                       </button>
@@ -1132,8 +1136,8 @@ function QSRBackend() {
                   </div>
                 </div>
                 {selectedDate && (
-                  <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                    <span className="text-blue-800 font-medium">
+                  <div className="mt-3 p-2 border rounded-lg" style={{ background: 'rgba(59,130,246,0.1)', borderColor: '#3b82f6' }}>
+                    <span className="font-medium" style={{ color: '#3b82f6' }}>
                       Showing orders for: {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </span>
                   </div>
@@ -1146,9 +1150,9 @@ function QSRBackend() {
             {orderMainTab === 'active' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Kitchen Orders Section */}
-                <div className="bg-white rounded-lg shadow-lg">
-                  <div className="bg-pink-50 border-b border-pink-200 px-6 py-4">
-                    <h2 className="text-2xl font-bold text-pink-800 flex items-center gap-2">
+                <div className="rounded-lg shadow-lg" style={{ background: '#1a1f2e' }}>
+                  <div className="border-b px-6 py-4" style={{ background: '#ec4899', borderColor: '#2a3142' }}>
+                    <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: '#ffffff' }}>
                       🍽️ Kitchen Orders
                     </h2>
                   </div>
@@ -1170,13 +1174,13 @@ function QSRBackend() {
                       
                       return kitchenOrders.length === 0 ? (
                         <div className="text-center py-12">
-                          <p className="text-gray-500 text-lg">
+                          <p className="text-lg" style={{ color: '#b3b7c7' }}>
                             {statusFilter === 'all' 
                               ? 'No kitchen orders yet' 
                               : `No ${statusFilter} kitchen orders`
                             }
                           </p>
-                          <p className="text-gray-400 text-sm">
+                          <p className="text-sm" style={{ color: '#6b7280' }}>
                             {statusFilter === 'all' 
                               ? 'Kitchen orders will appear here once placed' 
                               : 'Try selecting a different status or "Show All Orders"'
@@ -1186,13 +1190,13 @@ function QSRBackend() {
                       ) : (
                         <div className="space-y-3">
                           {kitchenOrders.map(order => (
-                            <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
+                            <div key={order.id} className="rounded-xl shadow-md p-6 border" style={{ background: 'rgba(236,72,153,0.1)', borderColor: '#ec4899' }}>
                               <div className="flex items-start justify-between mb-4">
                                 <div>
-                                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                  <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                  <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
+                                  <div className="text-sm" style={{ color: '#b3b7c7' }}>{order.date} • {order.timestamp}</div>
                                   {order.tableNumber && (
-                                    <div className="text-sm font-medium text-blue-600 mt-1">
+                                    <div className="text-sm font-medium mt-1" style={{ color: '#ec4899' }}>
                                       {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                        order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                        `🏷️ Table: ${order.tableNumber}`}
@@ -1202,14 +1206,20 @@ function QSRBackend() {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => startEditOrder(order)}
-                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    className="p-2 rounded-lg transition-colors"
+                                    style={{ color: '#3b82f6' }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(59,130,246,0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
                                     title="Edit Order"
                                   >
                                     ✏️
                                   </button>
                                   <button
                                     onClick={() => deleteOrder(order.id)}
-                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="p-2 rounded-lg transition-colors"
+                                    style={{ color: '#ef4444' }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(239,68,68,0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
                                     title="Cancel Order"
                                   >
                                     🗑️
@@ -1217,57 +1227,57 @@ function QSRBackend() {
                                 </div>
                               </div>
                               
-                              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                              <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
                                 {order.items.map((item, idx) => (
                                   <div key={idx} className="flex justify-between text-lg py-2">
-                                    <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                    <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                    <span style={{ color: '#b3b7c7' }}>{item.name} × {item.quantity}</span>
+                                    <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * item.quantity}</span>
                                   </div>
                                 ))}
-                                <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                  <span>Total</span>
-                                  <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                <div className="mt-2 pt-2 flex justify-between font-bold text-xl" style={{ borderTop: '1px solid #2a3142' }}>
+                                  <span style={{ color: '#e8eaed' }}>Total</span>
+                                  <span style={{ color: '#ec4899' }}>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
                                 </div>
                               </div>
                               
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'pending')}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'pending' 
-                                      ? 'bg-yellow-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'pending'
+                                    ? { background: '#f59e0b', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Pending
                                 </button>
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'preparing')}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'preparing' 
-                                      ? 'bg-blue-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'preparing'
+                                    ? { background: '#3b82f6', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Preparing
                                 </button>
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'ready')}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'ready' 
-                                      ? 'bg-green-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'ready'
+                                    ? { background: '#10b981', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Ready
                                 </button>
                                 <button
                                   onClick={() => deliverOrder(order.id)}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'delivered' 
-                                      ? 'bg-purple-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'delivered'
+                                    ? { background: '#8b5cf6', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Delivered
                                 </button>
@@ -1281,9 +1291,9 @@ function QSRBackend() {
                 </div>
 
                 {/* Bar Orders Section */}
-                <div className="bg-white rounded-lg shadow-lg">
-                  <div className="bg-blue-50 border-b border-blue-200 px-6 py-4">
-                    <h2 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
+                <div className="rounded-lg shadow-lg" style={{ background: '#1a1f2e' }}>
+                  <div className="border-b px-6 py-4" style={{ background: '#3b82f6', borderColor: '#2a3142' }}>
+                    <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: '#ffffff' }}>
                       🍹 Cafe/Bar Orders
                     </h2>
                   </div>
@@ -1305,13 +1315,13 @@ function QSRBackend() {
                       
                       return barOrders.length === 0 ? (
                         <div className="text-center py-12">
-                          <p className="text-gray-500 text-lg">
+                          <p className="text-lg" style={{ color: '#b3b7c7' }}>
                             {statusFilter === 'all' 
                               ? 'No bar orders yet' 
                               : `No ${statusFilter} bar orders`
                             }
                           </p>
-                          <p className="text-gray-400 text-sm">
+                          <p className="text-sm" style={{ color: '#6b7280' }}>
                             {statusFilter === 'all' 
                               ? 'Bar orders will appear here once placed' 
                               : 'Try selecting a different status or "Show All Orders"'
@@ -1321,13 +1331,13 @@ function QSRBackend() {
                       ) : (
                         <div className="space-y-3">
                           {barOrders.map(order => (
-                            <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
+                            <div key={order.id} className="rounded-xl shadow-md p-6 border" style={{ background: 'rgba(59,130,246,0.1)', borderColor: '#3b82f6' }}>
                               <div className="flex items-start justify-between mb-4">
                                 <div>
-                                  <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                  <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                  <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
+                                  <div className="text-sm" style={{ color: '#b3b7c7' }}>{order.date} • {order.timestamp}</div>
                                   {order.tableNumber && (
-                                    <div className="text-sm font-medium text-blue-600 mt-1">
+                                    <div className="text-sm font-medium mt-1" style={{ color: '#3b82f6' }}>
                                       {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                        order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                        `🏷️ Table: ${order.tableNumber}`}
@@ -1337,14 +1347,20 @@ function QSRBackend() {
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => startEditOrder(order)}
-                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    className="p-2 rounded-lg transition-colors"
+                                    style={{ color: '#3b82f6' }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(59,130,246,0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
                                     title="Edit Order"
                                   >
                                     ✏️
                                   </button>
                                   <button
                                     onClick={() => deleteOrder(order.id)}
-                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="p-2 rounded-lg transition-colors"
+                                    style={{ color: '#ef4444' }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(239,68,68,0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
                                     title="Cancel Order"
                                   >
                                     🗑️
@@ -1352,57 +1368,57 @@ function QSRBackend() {
                                 </div>
                               </div>
                               
-                              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                              <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
                                 {order.items.map((item, idx) => (
                                   <div key={idx} className="flex justify-between text-lg py-2">
-                                    <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                    <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                    <span style={{ color: '#b3b7c7' }}>{item.name} × {item.quantity}</span>
+                                    <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * item.quantity}</span>
                                   </div>
                                 ))}
-                                <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                  <span>Total</span>
-                                  <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                <div className="mt-2 pt-2 flex justify-between font-bold text-xl" style={{ borderTop: '1px solid #2a3142' }}>
+                                  <span style={{ color: '#e8eaed' }}>Total</span>
+                                  <span style={{ color: '#3b82f6' }}>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
                                 </div>
                               </div>
                               
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'pending')}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'pending' 
-                                      ? 'bg-yellow-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'pending'
+                                    ? { background: '#f59e0b', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Pending
                                 </button>
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'preparing')}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'preparing' 
-                                      ? 'bg-blue-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'preparing'
+                                    ? { background: '#3b82f6', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Preparing
                                 </button>
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'ready')}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'ready' 
-                                      ? 'bg-green-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'ready'
+                                    ? { background: '#10b981', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Ready
                                 </button>
                                 <button
                                   onClick={() => deliverOrder(order.id)}
-                                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                    (orderCurrentStatus[order.id] || order.status) === 'delivered' 
-                                      ? 'bg-purple-500 text-white' 
-                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                  }`}
+                                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                  style={(orderCurrentStatus[order.id] || order.status) === 'delivered'
+                                    ? { background: '#8b5cf6', color: '#ffffff' }
+                                    : { background: '#1e2330', color: '#b3b7c7' }
+                                  }
                                 >
                                   Delivered
                                 </button>
@@ -1460,11 +1476,11 @@ function QSRBackend() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Kitchen Pending Billing - Left Column */}
                               <div>
-                                <div className="bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-lg p-4 mb-4">
-                                  <h3 className="text-xl font-bold text-gray-900 mb-2">🍽️ Pending Kitchen Orders</h3>
+                                <div className="border rounded-lg p-4 mb-4" style={{ background: 'linear-gradient(to right, rgba(236,72,153,0.2), rgba(236,72,153,0.1))', borderColor: '#ec4899' }}>
+                                  <h3 className="text-xl font-bold mb-2" style={{ color: '#e8eaed' }}>🍽️ Pending Kitchen Orders</h3>
                                   <div className="flex justify-between items-center">
-                                    <span className="text-lg font-semibold text-gray-700">Total Amount:</span>
-                                    <span className="text-2xl font-bold text-pink-600">₹{kitchenTotal}</span>
+                                    <span className="text-lg font-semibold" style={{ color: '#b3b7c7' }}>Total Amount:</span>
+                                    <span className="text-2xl font-bold" style={{ color: '#ec4899' }}>₹{kitchenTotal}</span>
                                   </div>
                                 </div>
                                 <div className="space-y-3">
