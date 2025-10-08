@@ -1438,7 +1438,7 @@ function QSRBackend() {
               <div>
                 {/* Pending Billing Orders */}
                 {orderSubTab === 'pending' && (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="rounded-lg shadow-lg p-6" style={{ background: '#1a1f2e' }}>
                     {(() => {
                       const pendingBillingOrders = orders.filter(order => {
                         if (order.status !== 'delivered') return false;
@@ -1490,46 +1490,47 @@ function QSRBackend() {
                                     </div>
                                   ) : (
                                     kitchenOrders.map(order => (
-                                      <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
+                                      <div key={order.id} className="rounded-xl shadow-md p-6 border" style={{ background: 'rgba(236,72,153,0.1)', borderColor: '#ec4899' }}>
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
-                                            <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                            <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
+                                            <div className="text-sm" style={{ color: '#b3b7c7' }}>{order.date} • {order.timestamp}</div>
                                             {order.tableNumber && (
-                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                              <div className="text-sm font-medium mt-1" style={{ color: '#ec4899' }}>
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
                                               </div>
                                             )}
                                             {order.deliveredAt && (
-                                              <div className="text-xs text-gray-400">
+                                              <div className="text-xs" style={{ color: '#6b7280' }}>
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                                               </div>
                                             )}
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-white rounded-lg p-4 mb-4">
+                                        <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
                                           {order.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-lg py-2">
-                                              <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                              <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                              <span style={{ color: '#b3b7c7' }}>{item.name} × {item.quantity}</span>
+                                              <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * item.quantity}</span>
                                             </div>
                                           ))}
-                                          <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                            <span>Total</span>
-                                            <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                          <div className="mt-2 pt-2 flex justify-between font-bold text-xl" style={{ borderTop: '1px solid #2a3142' }}>
+                                            <span style={{ color: '#e8eaed' }}>Total</span>
+                                            <span style={{ color: '#ec4899' }}>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                                          <p className="text-gray-900 font-medium text-center mb-3">
+                                        <div className="border rounded-lg p-3" style={{ background: '#1e2330', borderColor: '#2a3142' }}>
+                                          <p className="font-medium text-center mb-3" style={{ color: '#e8eaed' }}>
                                             Order delivered - Ready for billing completion
                                           </p>
                                           <button
                                             onClick={() => completeBilling(order.id)}
-                                            className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                            className="w-full px-4 py-2 rounded-lg font-medium transition-colors"
+                                            style={{ background: '#10b981', color: '#ffffff' }}
                                           >
                                             Billing Completed
                                           </button>
@@ -1556,46 +1557,47 @@ function QSRBackend() {
                                     </div>
                                   ) : (
                                     barOrders.map(order => (
-                                      <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
+                                      <div key={order.id} className="rounded-xl shadow-md p-6 border" style={{ background: 'rgba(59,130,246,0.1)', borderColor: '#3b82f6' }}>
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
-                                            <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                            <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
+                                            <div className="text-sm" style={{ color: '#b3b7c7' }}>{order.date} • {order.timestamp}</div>
                                             {order.tableNumber && (
-                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                              <div className="text-sm font-medium mt-1" style={{ color: '#3b82f6' }}>
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
                                               </div>
                                             )}
                                             {order.deliveredAt && (
-                                              <div className="text-xs text-gray-400">
+                                              <div className="text-xs" style={{ color: '#6b7280' }}>
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                                               </div>
                                             )}
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-white rounded-lg p-4 mb-4">
+                                        <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
                                           {order.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-lg py-2">
-                                              <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                              <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                              <span style={{ color: '#b3b7c7' }}>{item.name} × {item.quantity}</span>
+                                              <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * item.quantity}</span>
                                             </div>
                                           ))}
-                                          <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                            <span>Total</span>
-                                            <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                          <div className="mt-2 pt-2 flex justify-between font-bold text-xl" style={{ borderTop: '1px solid #2a3142' }}>
+                                            <span style={{ color: '#e8eaed' }}>Total</span>
+                                            <span style={{ color: '#3b82f6' }}>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                                          <p className="text-gray-900 font-medium text-center mb-3">
+                                        <div className="border rounded-lg p-3" style={{ background: '#1e2330', borderColor: '#2a3142' }}>
+                                          <p className="font-medium text-center mb-3" style={{ color: '#e8eaed' }}>
                                             Order delivered - Ready for billing completion
                                           </p>
                                           <button
                                             onClick={() => completeBilling(order.id)}
-                                            className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                            className="w-full px-4 py-2 rounded-lg font-medium transition-colors"
+                                            style={{ background: '#10b981', color: '#ffffff' }}
                                           >
                                             Billing Completed
                                           </button>
@@ -1615,7 +1617,7 @@ function QSRBackend() {
 
                 {/* Completed Billing Orders */}
                 {orderSubTab === 'completed' && (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="rounded-lg shadow-lg p-6" style={{ background: '#1a1f2e' }}>
                     {(() => {
                       const completedBillingOrders = orders.filter(order => {
                         if (order.status !== 'delivered') return false;
@@ -1667,46 +1669,46 @@ function QSRBackend() {
                                     </div>
                                   ) : (
                                     kitchenOrders.map(order => (
-                                      <div key={order.id} className="rounded-xl shadow-md p-6 border bg-pink-50 border-pink-200">
+                                      <div key={order.id} className="rounded-xl shadow-md p-6 border" style={{ background: 'rgba(236,72,153,0.1)', borderColor: '#ec4899' }}>
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
-                                            <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                            <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
+                                            <div className="text-sm" style={{ color: '#b3b7c7' }}>{order.date} • {order.timestamp}</div>
                                             {order.tableNumber && (
-                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                              <div className="text-sm font-medium mt-1" style={{ color: '#ec4899' }}>
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
                                               </div>
                                             )}
                                             {order.deliveredAt && (
-                                              <div className="text-xs text-gray-400">
+                                              <div className="text-xs" style={{ color: '#6b7280' }}>
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                                               </div>
                                             )}
                                             {order.billingCompletedAt && (
-                                              <div className="text-xs text-gray-400">
+                                              <div className="text-xs" style={{ color: '#6b7280' }}>
                                                 Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
                                               </div>
                                             )}
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-white rounded-lg p-4 mb-4">
+                                        <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
                                           {order.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-lg py-2">
-                                              <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                              <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                              <span style={{ color: '#b3b7c7' }}>{item.name} × {item.quantity}</span>
+                                              <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * item.quantity}</span>
                                             </div>
                                           ))}
-                                          <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                            <span>Total</span>
-                                            <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                          <div className="mt-2 pt-2 flex justify-between font-bold text-xl" style={{ borderTop: '1px solid #2a3142' }}>
+                                            <span style={{ color: '#e8eaed' }}>Total</span>
+                                            <span style={{ color: '#ec4899' }}>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                                          <p className="text-green-800 font-medium text-center">
+                                        <div className="border rounded-lg p-3" style={{ background: 'rgba(16,185,129,0.1)', borderColor: '#10b981' }}>
+                                          <p className="font-medium text-center" style={{ color: '#10b981' }}>
                                             ✅ Billing Completed
                                           </p>
                                         </div>
@@ -1732,46 +1734,46 @@ function QSRBackend() {
                                     </div>
                                   ) : (
                                     barOrders.map(order => (
-                                      <div key={order.id} className="rounded-xl shadow-md p-6 border bg-blue-50 border-blue-200">
+                                      <div key={order.id} className="rounded-xl shadow-md p-6 border" style={{ background: 'rgba(59,130,246,0.1)', borderColor: '#3b82f6' }}>
                                         <div className="flex items-start justify-between mb-4">
                                           <div>
-                                            <div className="text-2xl font-bold text-gray-900">{order.token}</div>
-                                            <div className="text-sm text-gray-500">{order.date} • {order.timestamp}</div>
+                                            <div className="text-2xl font-bold" style={{ color: '#e8eaed' }}>{order.token}</div>
+                                            <div className="text-sm" style={{ color: '#b3b7c7' }}>{order.date} • {order.timestamp}</div>
                                             {order.tableNumber && (
-                                              <div className="text-sm font-medium text-blue-600 mt-1">
+                                              <div className="text-sm font-medium mt-1" style={{ color: '#3b82f6' }}>
                                                 {order.tableNumber === 'Take Away' ? '📦 Take Away' :
                                                  order.tableNumber === 'Home Delivery' ? '🚚 Home Delivery' :
                                                  `🏷️ Table: ${order.tableNumber}`}
                                               </div>
                                             )}
                                             {order.deliveredAt && (
-                                              <div className="text-xs text-gray-400">
+                                              <div className="text-xs" style={{ color: '#6b7280' }}>
                                                 Delivered: {new Date(order.deliveredAt).toLocaleTimeString()}
                                               </div>
                                             )}
                                             {order.billingCompletedAt && (
-                                              <div className="text-xs text-gray-400">
+                                              <div className="text-xs" style={{ color: '#6b7280' }}>
                                                 Billing Completed: {new Date(order.billingCompletedAt).toLocaleTimeString()}
                                               </div>
                                             )}
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-white rounded-lg p-4 mb-4">
+                                        <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
                                           {order.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-lg py-2">
-                                              <span className="text-gray-700">{item.name} × {item.quantity}</span>
-                                              <span className="text-gray-900 font-medium">₹{item.price * item.quantity}</span>
+                                              <span style={{ color: '#b3b7c7' }}>{item.name} × {item.quantity}</span>
+                                              <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * item.quantity}</span>
                                             </div>
                                           ))}
-                                          <div className="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-xl">
-                                            <span>Total</span>
-                                            <span>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
+                                          <div className="mt-2 pt-2 flex justify-between font-bold text-xl" style={{ borderTop: '1px solid #2a3142' }}>
+                                            <span style={{ color: '#e8eaed' }}>Total</span>
+                                            <span style={{ color: '#3b82f6' }}>₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</span>
                                           </div>
                                         </div>
                                         
-                                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                                          <p className="text-green-800 font-medium text-center">
+                                        <div className="border rounded-lg p-3" style={{ background: 'rgba(16,185,129,0.1)', borderColor: '#10b981' }}>
+                                          <p className="font-medium text-center" style={{ color: '#10b981' }}>
                                             ✅ Billing Completed
                                           </p>
                                         </div>
@@ -1793,34 +1795,34 @@ function QSRBackend() {
         )}
 
         {activeTab === 'takeOrder' && (
-          <div className="max-w-6xl mx-auto bg-gradient-to-br from-orange-50 to-yellow-50 min-h-screen p-6 rounded-2xl">
+          <div className="max-w-6xl mx-auto min-h-screen p-6 rounded-2xl" style={{ background: '#0f1419' }}>
             {editingOrder && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p className="text-blue-900 font-medium">Editing Order</p>
-                <p className="text-blue-700 text-sm">Modify items and click "Update Order"</p>
+              <div className="border rounded-lg p-4 mb-6" style={{ background: 'rgba(59,130,246,0.1)', borderColor: '#3b82f6' }}>
+                <p className="font-medium" style={{ color: '#3b82f6' }}>Editing Order</p>
+                <p className="text-sm" style={{ color: '#b3b7c7' }}>Modify items and click "Update Order"</p>
               </div>
             )}
             
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
-              <div className="border-b border-gray-200">
+            <div className="rounded-2xl shadow-lg overflow-hidden mb-6" style={{ background: '#1a1f2e' }}>
+              <div style={{ borderBottom: '1px solid #2a3142' }}>
                 <div className="flex">
                   <button
                     onClick={() => setTakeOrderTab('kitchen')}
-                    className={`flex-1 px-6 py-3 font-medium transition-all ${
-                      takeOrderTab === 'kitchen'
-                        ? 'text-pink-600 border-b-2 border-pink-600 bg-pink-50'
-                        : 'text-gray-600 hover:text-pink-600 hover:bg-pink-50'
-                    }`}
+                    className="flex-1 px-6 py-3 font-medium transition-all"
+                    style={takeOrderTab === 'kitchen'
+                      ? { color: '#ec4899', borderBottom: '2px solid #ec4899', background: 'rgba(236,72,153,0.1)' }
+                      : { color: '#b3b7c7' }
+                    }
                   >
                     🍽️ Kitchen Items
                   </button>
                   <button
                     onClick={() => setTakeOrderTab('bar')}
-                    className={`flex-1 px-6 py-3 font-medium transition-all ${
-                      takeOrderTab === 'bar'
-                        ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                    }`}
+                    className="flex-1 px-6 py-3 font-medium transition-all"
+                    style={takeOrderTab === 'bar'
+                      ? { color: '#3b82f6', borderBottom: '2px solid #3b82f6', background: 'rgba(59,130,246,0.1)' }
+                      : { color: '#b3b7c7' }
+                    }
                   >
                     🍹 Cafe/Bar Items
                   </button>
@@ -1829,13 +1831,14 @@ function QSRBackend() {
 
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold" style={{ color: '#e8eaed' }}>
                     {takeOrderTab === 'kitchen' ? 'Kitchen Items' : 'Cafe/Bar Items'}
                   </h2>
                   {menuItems.length === 0 && (
                     <button
                       onClick={addSampleMenuItems}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                      className="px-3 py-1 rounded text-sm"
+                      style={{ background: '#3b82f6', color: '#ffffff' }}
                     >
                       Add Sample Items
                     </button>
@@ -1854,31 +1857,36 @@ function QSRBackend() {
                     
                     return filteredItems.map(item => {
                       console.log('Rendering menu item:', item);
+                      const accentColor = takeOrderTab === 'kitchen' ? '#ec4899' : '#3b82f6';
                       return (
                   <div 
                     key={item.id} 
-                    className="border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-all cursor-pointer"
+                    className="border-2 rounded-xl p-4 transition-all cursor-pointer"
+                    style={{ background: '#1e2330', borderColor: '#2a3142' }}
                     onClick={() => updateCart(item.id, 1)}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = accentColor}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#2a3142'}
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <div className="font-semibold text-gray-900 text-lg">{item.name}</div>
-                        <div className="text-orange-600 font-medium">₹{item.price}</div>
+                        <div className="font-semibold text-lg" style={{ color: '#e8eaed' }}>{item.name}</div>
+                        <div className="font-medium" style={{ color: accentColor }}>₹{item.price}</div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                    <div className="flex items-center justify-between rounded-lg p-2" style={{ background: '#1a1f2e' }}>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           updateCart(item.id, -1);
                         }}
-                        className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center border rounded-lg transition-colors"
+                        style={{ background: '#1e2330', borderColor: '#2a3142', color: '#e8eaed' }}
                       >
                         −
                       </button>
                       
-                      <div className="text-xl font-bold text-gray-900 min-w-[40px] text-center">
+                      <div className="text-xl font-bold min-w-[40px] text-center" style={{ color: '#e8eaed' }}>
                         {(takeOrderTab === 'kitchen' ? kitchenCart : barCart)[item.id] || 0}
                       </div>
                       
@@ -1887,7 +1895,8 @@ function QSRBackend() {
                           e.stopPropagation();
                           updateCart(item.id, 1);
                         }}
-                        className="w-10 h-10 flex items-center justify-center bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg transition-colors"
+                        style={{ background: accentColor, color: '#ffffff' }}
                       >
                         +
                       </button>
@@ -1899,13 +1908,14 @@ function QSRBackend() {
                 </div>
                 
                 {menuItems.filter(item => item.category === (takeOrderTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <p className="text-lg">No {takeOrderTab} items available</p>
-                    <p className="text-sm mb-4">Add items in Menu Management first</p>
+                  <div className="text-center py-8">
+                    <p className="text-lg" style={{ color: '#b3b7c7' }}>No {takeOrderTab} items available</p>
+                    <p className="text-sm mb-4" style={{ color: '#6b7280' }}>Add items in Menu Management first</p>
                     {menuItems.length === 0 && (
                       <button
                         onClick={addSampleMenuItems}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                        className="px-6 py-2 rounded-lg font-medium transition-colors"
+                        style={{ background: '#3b82f6', color: '#ffffff' }}
                       >
                         Add Sample Menu Items
                       </button>
@@ -1917,9 +1927,10 @@ function QSRBackend() {
 
             {(() => {
               const currentCart = takeOrderTab === 'kitchen' ? kitchenCart : barCart;
+              const accentColor = takeOrderTab === 'kitchen' ? '#ec4899' : '#3b82f6';
               return Object.keys(currentCart).length > 0 && (
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <div className="rounded-2xl shadow-lg p-6" style={{ background: '#1a1f2e' }}>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#e8eaed' }}>
                   {takeOrderTab === 'kitchen' ? '🍽️ Kitchen Order Summary' : '🍹 Bar Order Summary'}
                 </h3>
                 
@@ -1928,22 +1939,22 @@ function QSRBackend() {
                     const item = menuItems.find(m => m.id === itemId);
                     console.log('Cart summary - looking for item ID:', itemId, 'found:', item);
                     return item ? (
-                      <div key={itemId} className="flex justify-between text-gray-700 text-lg">
-                        <span>{item.name} × {qty}</span>
-                        <span className="font-medium">₹{item.price * qty}</span>
+                      <div key={itemId} className="flex justify-between text-lg">
+                        <span style={{ color: '#b3b7c7' }}>{item.name} × {qty}</span>
+                        <span className="font-medium" style={{ color: '#e8eaed' }}>₹{item.price * qty}</span>
                       </div>
                     ) : (
-                      <div key={itemId} className="flex justify-between text-red-500 text-lg">
-                        <span>Item not found (ID: {itemId})</span>
-                        <span>× {qty}</span>
+                      <div key={itemId} className="flex justify-between text-lg">
+                        <span style={{ color: '#ef4444' }}>Item not found (ID: {itemId})</span>
+                        <span style={{ color: '#ef4444' }}>× {qty}</span>
                       </div>
                     );
                   })}
                 </div>
                 
                 {/* Table Selection */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <label className="block text-lg font-semibold text-gray-700 mb-3">
+                <div className="rounded-lg p-4 mb-4" style={{ background: '#1e2330' }}>
+                  <label className="block text-lg font-semibold mb-3" style={{ color: '#e8eaed' }}>
                     🏷️ Select Table Number
                   </label>
                   <div className="grid grid-cols-5 gap-2">
@@ -1955,18 +1966,19 @@ function QSRBackend() {
                         order.billingStatus !== 'billing_completed'
                       );
                       const hasActiveOrder = tableOrders.length > 0;
+                      const accentColor = takeOrderTab === 'kitchen' ? '#ec4899' : '#3b82f6';
                       
                       return (
                         <button
                           key={tableNum}
                           onClick={() => setSelectedTable(tableNum.toString())}
-                          className={`p-3 rounded-lg font-medium transition-all relative ${
-                            selectedTable === tableNum.toString()
-                              ? 'bg-orange-500 text-white shadow-md'
-                              : hasActiveOrder
-                              ? 'bg-red-100 text-red-700 border-2 border-red-400 hover:bg-red-200'
-                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-orange-50 hover:border-orange-300'
-                          }`}
+                          className="p-3 rounded-lg font-medium transition-all relative border-2"
+                          style={selectedTable === tableNum.toString()
+                            ? { background: accentColor, color: '#ffffff', borderColor: accentColor }
+                            : hasActiveOrder
+                            ? { background: 'rgba(239,68,68,0.2)', color: '#ef4444', borderColor: '#ef4444' }
+                            : { background: '#1a1f2e', color: '#e8eaed', borderColor: '#2a3142' }
+                          }
                         >
                           {tableNum}
                           {hasActiveOrder && (
@@ -1982,36 +1994,36 @@ function QSRBackend() {
                   <div className="mt-3 flex gap-2">
                     <button
                       onClick={() => setSelectedTable('Take Away')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedTable === 'Take Away'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-300'
-                      }`}
+                      className="px-4 py-2 rounded-lg font-medium transition-all"
+                      style={selectedTable === 'Take Away'
+                        ? { background: '#3b82f6', color: '#ffffff' }
+                        : { background: '#1a1f2e', color: '#e8eaed', border: '1px solid #2a3142' }
+                      }
                     >
                       📦 Take Away
                     </button>
                     <button
                       onClick={() => setSelectedTable('Home Delivery')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedTable === 'Home Delivery'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-green-50 hover:border-green-300'
-                      }`}
+                      className="px-4 py-2 rounded-lg font-medium transition-all"
+                      style={selectedTable === 'Home Delivery'
+                        ? { background: '#10b981', color: '#ffffff' }
+                        : { background: '#1a1f2e', color: '#e8eaed', border: '1px solid #2a3142' }
+                      }
                     >
                       🚚 Home Delivery
                     </button>
                   </div>
                   {selectedTable && (
-                    <div className="mt-3 p-2 bg-orange-100 border border-orange-200 rounded-lg">
-                      <span className="text-orange-800 font-medium">
+                    <div className="mt-3 p-2 border rounded-lg" style={{ background: `rgba(${takeOrderTab === 'kitchen' ? '236,72,153' : '59,130,246'},0.1)`, borderColor: accentColor }}>
+                      <span className="font-medium" style={{ color: accentColor }}>
                         Selected: {selectedTable === 'Take Away' ? '📦 Take Away' : 
                                   selectedTable === 'Home Delivery' ? '🚚 Home Delivery' : 
                                   `Table ${selectedTable}`}
                       </span>
                     </div>
                   )}
-                  <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm text-blue-800">
+                  <div className="mt-3 p-2 border rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', borderColor: '#ef4444' }}>
+                    <div className="flex items-center gap-2 text-sm" style={{ color: '#ef4444' }}>
                       <span className="flex h-3 w-3">
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                       </span>
@@ -2020,10 +2032,10 @@ function QSRBackend() {
                   </div>
                 </div>
                 
-                <div className="border-t border-gray-300 pt-4 mb-4">
+                <div className="pt-4 mb-4" style={{ borderTop: '1px solid #2a3142' }}>
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Total ({getTotalItems()} items)</span>
-                    <span className="text-orange-600">₹{getTotalPrice()}</span>
+                    <span style={{ color: '#e8eaed' }}>Total ({getTotalItems()} items)</span>
+                    <span style={{ color: accentColor }}>₹{getTotalPrice()}</span>
                   </div>
                 </div>
                 
@@ -2032,13 +2044,15 @@ function QSRBackend() {
                     <>
                       <button
                         onClick={cancelEdit}
-                        className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        className="flex-1 px-6 py-3 rounded-lg font-medium transition-colors"
+                        style={{ background: '#1e2330', color: '#e8eaed' }}
                       >
                         Cancel
                       </button>
                       <button
                         onClick={updateOrder}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        className="flex-1 px-6 py-3 rounded-lg font-medium transition-colors"
+                        style={{ background: '#3b82f6', color: '#ffffff' }}
                       >
                         Update Order
                       </button>
@@ -2046,7 +2060,8 @@ function QSRBackend() {
                   ) : (
                     <button
                       onClick={placeOrder}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      className="w-full px-6 py-3 rounded-lg font-medium transition-colors"
+                      style={{ background: '#10b981', color: '#ffffff' }}
                     >
                       Generate Token & Place Order
                     </button>
@@ -2059,27 +2074,27 @@ function QSRBackend() {
         )}
 
         {activeTab === 'menu' && (
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-green-50 to-blue-50 min-h-screen p-6 rounded-2xl">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="border-b border-gray-200">
+          <div className="max-w-4xl mx-auto min-h-screen p-6 rounded-2xl" style={{ background: '#0f1419' }}>
+            <div className="rounded-2xl shadow-lg overflow-hidden" style={{ background: '#1a1f2e' }}>
+              <div style={{ borderBottom: '1px solid #2a3142' }}>
                 <div className="flex">
                   <button
                     onClick={() => setMenuTab('kitchen')}
-                    className={`flex-1 px-6 py-3 font-medium transition-all ${
-                      menuTab === 'kitchen'
-                        ? 'text-pink-600 border-b-2 border-pink-600 bg-pink-50'
-                        : 'text-gray-600 hover:text-pink-600 hover:bg-pink-50'
-                    }`}
+                    className="flex-1 px-6 py-3 font-medium transition-all"
+                    style={menuTab === 'kitchen'
+                      ? { color: '#ec4899', borderBottom: '2px solid #ec4899', background: 'rgba(236,72,153,0.1)' }
+                      : { color: '#b3b7c7' }
+                    }
                   >
                     🍽️ Kitchen Menu
                   </button>
                   <button
                     onClick={() => setMenuTab('bar')}
-                    className={`flex-1 px-6 py-3 font-medium transition-all ${
-                      menuTab === 'bar'
-                        ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                    }`}
+                    className="flex-1 px-6 py-3 font-medium transition-all"
+                    style={menuTab === 'bar'
+                      ? { color: '#3b82f6', borderBottom: '2px solid #3b82f6', background: 'rgba(59,130,246,0.1)' }
+                      : { color: '#b3b7c7' }
+                    }
                   >
                     🍹 Cafe/Bar Menu
                   </button>
@@ -2087,7 +2102,7 @@ function QSRBackend() {
               </div>
 
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <h2 className="text-2xl font-bold mb-6" style={{ color: '#e8eaed' }}>
                   {menuTab === 'kitchen' ? 'Kitchen Items' : 'Cafe/Bar Items'}
                 </h2>
                 
@@ -2097,14 +2112,16 @@ function QSRBackend() {
                   placeholder="Item name"
                   value={newItem.name}
                   onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 rounded-lg border outline-none"
+                  style={{ background: '#1e2330', color: '#e8eaed', borderColor: '#2a3142' }}
                 />
                 <input
                   type="number"
                   placeholder="Price"
                   value={newItem.price}
                   onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 rounded-lg border outline-none"
+                  style={{ background: '#1e2330', color: '#e8eaed', borderColor: '#2a3142' }}
                 />
                   <div className="flex gap-2">
                     <button
@@ -2112,14 +2129,16 @@ function QSRBackend() {
                         console.log('Button clicked!');
                         addMenuItem();
                       }}
-                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+                      className="flex-1 px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+                      style={{ background: menuTab === 'kitchen' ? '#ec4899' : '#3b82f6', color: '#ffffff' }}
                     >
                       {editingMenuItem ? 'Update Item' : `+ Add ${menuTab === 'kitchen' ? 'Kitchen' : 'Cafe/Bar'} Item`}
                     </button>
                     {editingMenuItem && (
                     <button
                         onClick={cancelEditMenuItem}
-                        className="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                        className="px-4 py-3 rounded-lg font-medium transition-colors"
+                        style={{ background: '#1e2330', color: '#e8eaed' }}
                       >
                         Cancel
                   </button>
@@ -2135,44 +2154,55 @@ function QSRBackend() {
                     console.log('Filtered items:', filteredItems);
                     return filteredItems;
                   })()
-                      .map(item => (
-                  <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      .map(item => {
+                        const accentColor = item.category === 'Bar' ? '#3b82f6' : '#ec4899';
+                        return (
+                  <div key={item.id} className="flex items-center justify-between p-4 rounded-lg transition-colors" style={{ background: '#1e2330' }}>
                     <div>
-                      <div className="font-semibold text-gray-900">{item.name}</div>
-                      <div className="text-orange-600 font-medium">₹{item.price}</div>
-                        <div className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${
-                          item.category === 'Bar' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                        }`}>
+                      <div className="font-semibold" style={{ color: '#e8eaed' }}>{item.name}</div>
+                      <div className="font-medium" style={{ color: accentColor }}>₹{item.price}</div>
+                        <div className="text-xs px-2 py-1 rounded-full inline-block mt-1" style={{
+                          background: item.category === 'Bar' ? 'rgba(59,130,246,0.2)' : 'rgba(236,72,153,0.2)',
+                          color: item.category === 'Bar' ? '#3b82f6' : '#ec4899'
+                        }}>
                           {item.category}
                         </div>
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => startEditMenuItem(item)}
-                        className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors"
+                        style={{ color: '#3b82f6' }}
+                        onMouseEnter={(e) => e.target.style.background = 'rgba(59,130,246,0.1)'}
+                        onMouseLeave={(e) => e.target.style.background = 'transparent'}
                         title="Edit Item"
                       >
                         ✏️
                       </button>
                       <button
                         onClick={() => deleteMenuItem(item.id)}
-                        className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                        className="p-2 rounded-lg transition-colors"
+                        style={{ color: '#ef4444' }}
+                        onMouseEnter={(e) => e.target.style.background = 'rgba(239,68,68,0.1)'}
+                        onMouseLeave={(e) => e.target.style.background = 'transparent'}
                         title="Delete Item"
                       >
                         ✕
                       </button>
                     </div>
                   </div>
-                ))}
+                        );
+                      })}
                   
                   {menuItems.filter(item => item.category === (menuTab === 'kitchen' ? 'Kitchen' : 'Bar')).length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      <p className="text-lg">No {menuTab} items yet</p>
-                      <p className="text-sm mb-4">Add some items to get started</p>
+                    <div className="text-center py-8">
+                      <p className="text-lg" style={{ color: '#b3b7c7' }}>No {menuTab} items yet</p>
+                      <p className="text-sm mb-4" style={{ color: '#6b7280' }}>Add some items to get started</p>
                       {menuItems.length === 0 && (
                         <button
                           onClick={addSampleMenuItems}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                          className="px-6 py-2 rounded-lg font-medium transition-colors"
+                          style={{ background: '#3b82f6', color: '#ffffff' }}
                         >
                           Add Sample Menu Items
                         </button>
