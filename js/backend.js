@@ -845,7 +845,7 @@ function QSRBackend() {
             <div className="flex items-center gap-4">
               {/* Pikonik Logo */}
               <div className="w-12 h-12 rounded-lg flex items-center justify-center p-1" style={{ background: '#1e2330' }}>
-                <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
+                <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" style={{ filter: 'invert(1) brightness(3) drop-shadow(0 0 8px rgba(255,255,255,0.3))' }} />
               </div>
               <div>
                 <h1 className="text-2xl font-bold" style={{ color: '#e8eaed' }}>Manager Dashboard</h1>

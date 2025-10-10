@@ -195,7 +195,7 @@ function QSRTVDisplay() {
       {/* Header with Logo and Title */}
       <div className="flex items-center justify-center gap-6 mb-8">
         <div className="w-16 h-16 rounded-lg flex items-center justify-center p-2" style={{ background: '#1e2330' }}>
-          <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" />
+          <img src="./assets/Pikonik Transparent Logo.png" alt="Pikonik Logo" className="w-full h-full object-contain" style={{ filter: 'invert(1) brightness(3) drop-shadow(0 0 8px rgba(255,255,255,0.3))' }} />
         </div>
         <h1 className="text-6xl font-bold" style={{ color: '#e8eaed' }}>
           {boardType === 'kitchen' ? '🍽️ Kitchen' : '🍹 Cafe/Bar'} Order Status Board
