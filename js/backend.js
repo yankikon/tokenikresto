@@ -623,10 +623,23 @@ function QSRBackend() {
   // Sign out function
   const handleSignOut = async () => {
     try {
+      // Clear local state
+      setOrders([]);
+      setMenuItems([]);
+      setKitchenCart({});
+      setBarCart({});
+      
+      // Sign out from Firebase
       await window.Firebase.signOut(auth);
-      window.location.href = 'index.html';
+      
+      // Clear any cached data
+      localStorage.clear();
+      
+      // Redirect to login page
+      window.location.href = 'login.html';
     } catch (error) {
       console.error('Error signing out:', error);
+      alert('Error signing out. Please try again.');
     }
   };
 
